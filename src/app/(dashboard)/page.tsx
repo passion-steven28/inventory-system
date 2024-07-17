@@ -8,8 +8,8 @@ import { DollarSign, DollarSignIcon } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="grid w-full grid-cols-12 gap-4 px-2">
-      <div className="col-start-1 col-end-8 row-start-1 row-end-2">
+    <main className="grid w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">
+      <div className="md:col-start-1 md:col-end-8 md:row-start-1 md:row-end-2">
         <DashboardCardWrapper wrapperTitle="Sales overview">
           {salesData.map((data) => (
             <DashboardCard
@@ -22,7 +22,7 @@ export default function Home() {
           ))}
         </DashboardCardWrapper>
       </div>
-      <div className="col-start-8 col-end-13">
+      <div className="md:col-start-8 md:col-end-13 row-start-2 row-end-3 md:row-start-2 md:row-end-3">
         <DashboardCardWrapper wrapperTitle="Sales overview">
           {InventoryData.map((data) => (
             <DashboardCard
@@ -35,7 +35,7 @@ export default function Home() {
           ))}
         </DashboardCardWrapper>
       </div>
-      <div className="col-start-8 col-end-13 row-start-2 row-end-3">
+      {/* <div className="col-start-8 col-end-13 row-start-2 row-end-3">
         <DashboardCardWrapper wrapperTitle="Sales overview">
           {InventoryData.map((data) => (
             <DashboardCard
@@ -47,8 +47,8 @@ export default function Home() {
             />
           ))}
         </DashboardCardWrapper>
-      </div>
-      <div className="col-start-1 col-end-13 row-start-2 row-end-3">
+      </div> */}
+      <div className="md:col-start-1 md:col-end-13 row-start-3 row-end-4 md:row-start-2 md:row-end-3">
         <SalesChart />
       </div>
     </main>

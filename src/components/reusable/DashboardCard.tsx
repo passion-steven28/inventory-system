@@ -48,7 +48,7 @@ export const DashboardCardWrapper = ({
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 {wrapperTitle}
             </CardHeader>
-            <CardContent className="flex items-center justify-between gap-2">
+            <CardContent className="flex items-center justify-between w-full gap-2 overflow-x-scroll">
                 {children}
             </CardContent>
         </Card>

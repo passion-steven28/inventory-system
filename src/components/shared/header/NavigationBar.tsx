@@ -22,7 +22,9 @@ export default function NavigationBar({ }: Props) {
                         href={link.href}
                         className='flex items-center gap-2 px-4 py-2 text-primary-foreground text-sm font-medium transition-colors duration-150 hover:text-primary'>
                         {link.icon}
-                        {link.name}
+                        <span className='hidden md:flex items-center gap-1'>
+                            {link.name}
+                        </span>
                     </Link>
                 </li>
             ))}

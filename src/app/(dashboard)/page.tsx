@@ -4,11 +4,14 @@ import DashboardCard, {
   DashboardCardWrapper,
 } from "@/components/reusable/DashboardCard";
 import Grids from "@/components/reusable/Grids";
-import { DollarSign, DollarSignIcon } from "lucide-react";
+import LinkTableWrapper from "@/components/table/LinkTableWrapper";
+import { LowQuantityTable } from "@/components/table/LowQuantityTable";
+import { TopSellingTable } from "@/components/table/TopSellingTable";
+import { DollarSign, DollarSignIcon, Link } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="grid w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">
+    <main className="grid place-content-center w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">
       <div className="md:col-start-1 md:col-end-8 md:row-start-1 md:row-end-2">
         <DashboardCardWrapper wrapperTitle="Sales overview">
           {salesData.map((data) => (
@@ -22,8 +25,8 @@ export default function Home() {
           ))}
         </DashboardCardWrapper>
       </div>
-      <div className="md:col-start-8 md:col-end-13 row-start-2 row-end-3 md:row-start-2 md:row-end-3">
-        <DashboardCardWrapper wrapperTitle="Sales overview">
+      <div className="md:col-start-8 md:col-end-13 md:row-start-1 md:row-end-2 lg:row-start-1 lg:row-end-2">
+        <DashboardCardWrapper wrapperTitle="Orders overview">
           {InventoryData.map((data) => (
             <DashboardCard
               key={data.title}
@@ -35,21 +38,18 @@ export default function Home() {
           ))}
         </DashboardCardWrapper>
       </div>
-      {/* <div className="col-start-8 col-end-13 row-start-2 row-end-3">
-        <DashboardCardWrapper wrapperTitle="Sales overview">
-          {InventoryData.map((data) => (
-            <DashboardCard
-              key={data.title}
-              dashboardCardTitle={data.title}
-              dashboardCardIcon={data.icon}
-              dashboardCardValue={data.value}
-              dashboardCardChange={data.change}
-            />
-          ))}
-        </DashboardCardWrapper>
-      </div> */}
       <div className="md:col-start-1 md:col-end-13 row-start-3 row-end-4 md:row-start-2 md:row-end-3">
         <SalesChart />
+      </div>
+      <div className="md:col-start-1 md:col-end-8 md:row-start-3 md:row-end-auto">
+        <LinkTableWrapper title="Top Selling" url="/dashboard/top-selling">
+          <TopSellingTable />
+        </LinkTableWrapper>
+      </div>
+      <div className="md:col-start-8 md:col-end-13 row-start-5 md:row-start-3 row-end-auto w-full">
+        <LinkTableWrapper title="Low quantity stock" url="/dashboard/low-quantity-stock">
+          <LowQuantityTable />
+        </LinkTableWrapper>
       </div>
     </main>
   );

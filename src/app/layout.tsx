@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={noto.className}>
+      <body className={lato.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

@@ -1,19 +1,14 @@
-import NavigationBar from '@/components/shared/header/NavigationBar'
-import TopNav from '@/components/shared/header/TopNav'
-import { Separator } from '@/components/ui/separator'
-import React from 'react'
+import AsideBar from "@/components/shared/AsideBar"
+import MobileNav from "@/components/shared/MobileNav"
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+export default function layout({children}: {children: React.ReactNode}) {
     return (
-        <>
-            <header className='grid sticky top-0 z-50 bg-muted/80 backdrop-blur-xl py-2 px-10 mb-4 w-full'>
-                <TopNav />
-                <Separator className='my-2 w-full h-[0.15rem] bg-gray-600 rounded-full' />
-                <NavigationBar />
-            </header>
-            {children}
-        </>
+        <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+            <AsideBar />
+            <div className="flex flex-col gap-2">
+                <MobileNav />
+                {children}
+            </div>
+        </div>
     )
 }
-
-export default layout

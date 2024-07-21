@@ -88,7 +88,7 @@ const page = async () => {
         <main className="flex flex-col gap-4 px-10">
             <div className="md:col-start-2 md:col-end-12">
                 <OverallComponent
-                    title="Products"
+                    title="Users"
                 >
                     {overallItems.map((item: overallItem, index: number) => (
                         <OverallCard
@@ -104,7 +104,7 @@ const page = async () => {
                     href="/dashboard/edit/product"
                 >
                     <Button>
-                            Add Order
+                            Add User
                             <span className="ml-2">
                                 <PlusIcon className="h-4 w-4" />
                             </span>

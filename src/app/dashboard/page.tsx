@@ -12,7 +12,7 @@ import { DollarSign, DollarSignIcon, Link } from "lucide-react";
 export default function Home() {
   return (
     <main className="grid place-content-center w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">
-      <div className="md:col-start-1 md:col-end-8 md:row-start-1 md:row-end-2">
+      <div className="md:col-start-1 md:col-end-13 md:row-start-1 md:row-end-2">
         <DashboardCardWrapper wrapperTitle="Sales overview">
           {salesData.map((data) => (
             <DashboardCard
@@ -25,7 +25,7 @@ export default function Home() {
           ))}
         </DashboardCardWrapper>
       </div>
-      <div className="md:col-start-8 md:col-end-13 md:row-start-1 md:row-end-2 lg:row-start-1 lg:row-end-2">
+      {/* <div className="md:col-start-8 md:col-end-13 md:row-start-1 md:row-end-2 lg:row-start-1 lg:row-end-2">
         <DashboardCardWrapper wrapperTitle="Orders overview">
           {InventoryData.map((data) => (
             <DashboardCard
@@ -37,7 +37,7 @@ export default function Home() {
             />
           ))}
         </DashboardCardWrapper>
-      </div>
+      </div> */}
       <div className="md:col-start-1 md:col-end-13 row-start-3 row-end-4 md:row-start-2 md:row-end-3">
         <SalesChart />
       </div>

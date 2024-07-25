@@ -3,6 +3,7 @@ import { Inter, Lato, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 const lato = Lato({
@@ -28,6 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ConvexClientProvider>
     <html lang="en">
       <body className={lato.className}>
         <TooltipProvider>
@@ -41,6 +43,7 @@ export default function RootLayout({
           </ThemeProvider>
         </TooltipProvider>
       </body>
-    </html>
+      </html>
+      </ConvexClientProvider>
   );
 }

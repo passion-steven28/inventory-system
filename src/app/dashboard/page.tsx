@@ -20,17 +20,6 @@ import { DollarSign, DollarSignIcon, Link } from "lucide-react";
 
 
 export default async function Home() {
-  const organizationId = 'org_2jnoR2jQ9ZDNMIybFTH1KcY8AJ1';
-
-  const data =  clerkClient.organizations.getOrganizationMembershipList({
-    organizationId,
-    // returns the first 10 memberships
-    limit: 10,
-  });
-  console.log((await data).data);
-  const { userId,orgRole } = auth();
-
-  console.log(userId,orgRole);
 
   return (
     <main className="grid place-content-center w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">

@@ -5,11 +5,11 @@ import { auth,Organization } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 export default function layout({ children }: { children: React.ReactNode }) {
-    const orgId = auth().orgId;
+    // const orgId = auth().orgId;
 
-    console.log(orgId);
+    // console.log(orgId);
 
-    if (!orgId) redirect('/create-organization');
+    // if (!orgId) redirect('/create-organization');
 
     return (
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">

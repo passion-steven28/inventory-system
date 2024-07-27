@@ -3,11 +3,11 @@ import { ConvexError, v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
 
 export const getOrganizationById = query({
-    args: { clerkId: v.string() },
+    args: { clerkOrgId: v.string() },
     handler: async (ctx, args) => {
         const organization = await ctx.db
             .query("organization")
-            .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+            .filter((q) => q.eq(q.field("clerkOrgId"), args.clerkOrgId))
             .unique();
 
         if (!organization) {
@@ -21,12 +21,12 @@ export const getOrganizationById = query({
 
 export const createOrganization = internalMutation({
     args: {
-        clerkId: v.string(),
+        clerkOrgId: v.string(),
         name: v.string(),
     },
     handler: async (ctx, args) => {
         await ctx.db.insert("organization", {
-            clerkId: args.clerkId,
+            clerkOrgId: args.clerkOrgId,
             name: args.name,
         });
     },
@@ -34,13 +34,13 @@ export const createOrganization = internalMutation({
 
 export const updateOrganization = internalMutation({
     args: {
-        clerkId: v.string(),
+        clerkOrgId: v.string(),
         name: v.string(),
     },
     async handler(ctx, args) {
         const organization = await ctx.db
             .query("organization")
-            .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+            .filter((q) => q.eq(q.field("clerkOrgId"), args.clerkOrgId))
             .unique();
 
         if (!organization) {
@@ -54,11 +54,11 @@ export const updateOrganization = internalMutation({
 });
 
 export const deleteOrganization = internalMutation({
-    args: { clerkId: v.string() },
+    args: { clerkOrgId: v.string() },
     async handler(ctx, args) {
         const organization = await ctx.db
             .query("organization")
-            .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+            .filter((q) => q.eq(q.field("clerkOrgId"), args.clerkOrgId))
             .unique();
 
         if (!organization) {

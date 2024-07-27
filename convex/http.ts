@@ -17,24 +17,24 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
     switch (event.type) {
         case "organization.created":
             await ctx.runMutation(internal.organization.createOrganization, {
-                clerkId: event.data.id,
-                name: event.data.name,
+                clerkOrgId: event.data.id as string,
+                name: event.data.name as string,
             });
             break;
         case "organization.updated":
             await ctx.runMutation(internal.organization.updateOrganization, {
-                clerkId: event.data.id,
-                name: event.data.name,
+                clerkOrgId: event.data.id as string,
+                name: event.data.name as string,
             });
             break;
         case "organization.deleted":
             await ctx.runMutation(internal.organization.deleteOrganization, {
-                clerkId: event.data.id as string,
+                clerkOrgId: event.data.id as string,
             });
             break;
         case "user.created":
             await ctx.runMutation(internal.users.createUser, {
-                clerkId: event.data.id,
+                clerkId: event.data.id as string,
                 email: event.data.email_addresses[0].email_address,
                 imageUrl: event.data.image_url,
                 name: event.data.first_name!,
@@ -42,7 +42,7 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
             break;
         case "user.updated":
             await ctx.runMutation(internal.users.updateUser, {
-                clerkId: event.data.id,
+                clerkId: event.data.id as string,
                 imageUrl: event.data.image_url,
                 email: event.data.email_addresses[0].email_address,
             });

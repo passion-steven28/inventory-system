@@ -25,7 +25,7 @@ export default function AddProductStatus() {
                 <div className="grid gap-6">
                     <div className="grid gap-3">
                         <Label htmlFor="status">Status</Label>
-                        <Select>
+                        <Select name="status">
                             <SelectTrigger id="status" aria-label="Select status">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>

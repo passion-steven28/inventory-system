@@ -25,7 +25,7 @@ export default function AddProductCategory() {
                 <div className="grid gap-6 sm:grid-cols-3">
                     <div className="grid gap-3">
                         <Label htmlFor="category">Category</Label>
-                        <Select>
+                        <Select name="category">
                             <SelectTrigger id="category" aria-label="Select category">
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
@@ -38,7 +38,7 @@ export default function AddProductCategory() {
                     </div>
                     <div className="grid gap-3">
                         <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                        <Select>
+                        <Select name="subcategory" defaultValue="t-shirts">
                             <SelectTrigger id="subcategory" aria-label="Select subcategory">
                                 <SelectValue placeholder="Select subcategory" />
                             </SelectTrigger>

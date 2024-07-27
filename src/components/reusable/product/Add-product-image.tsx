@@ -10,6 +10,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 export default function AddProductImage() {
     return (
@@ -48,6 +49,7 @@ export default function AddProductImage() {
                                 width="84"
                             />
                         </button>
+                        <Input type="file" name="image" className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed" />
                         <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
                             <Upload className="h-4 w-4 text-muted-foreground" />
                             <span className="sr-only">Upload</span>

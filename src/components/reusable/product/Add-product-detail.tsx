@@ -26,16 +26,18 @@ export default function AddProductDetail() {
                         <Label htmlFor="name">Name</Label>
                         <Input
                             id="name"
+                            name="name"
                             type="text"
                             className="w-full"
-                            defaultValue="Gamer Gear Pro Controller"
+                            placeholder="Gamer Gear Pro Controller"
                         />
                     </div>
                     <div className="grid gap-3">
                         <Label htmlFor="description">Description</Label>
                         <Textarea
                             id="description"
-                            defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl nec ultricies ultricies, nunc nisl ultricies nunc, nec ultricies nunc nisl nec nunc."
+                            name="description"
+                            placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl nec ultricies ultricies, nunc nisl ultricies nunc, nec ultricies nunc nisl nec nunc."
                             className="min-h-32"
                         />
                     </div>

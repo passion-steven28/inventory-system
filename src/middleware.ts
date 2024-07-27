@@ -1,7 +1,9 @@
+import { RedirectToCreateOrganization } from '@clerk/nextjs';
 import {
     clerkMiddleware,
     createRouteMatcher
 } from '@clerk/nextjs/server';
+import { redirect } from 'next/dist/server/api-utils';
 
 const isProtectedRoute = createRouteMatcher([
     '/dashboard(.*)',
@@ -9,6 +11,8 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware((auth, req) => {
     if (isProtectedRoute(req)) auth().protect();
+    const orgId = auth().orgId;
+    if (!orgId) console.log('no org id');
 });
 
 export const config = {

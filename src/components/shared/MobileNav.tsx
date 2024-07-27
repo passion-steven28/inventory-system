@@ -31,7 +31,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Logo from "../ui/logo"
-import { UserButton } from "@clerk/nextjs"
+import { OrganizationList, OrganizationProfile, OrganizationSwitcher, UserButton } from "@clerk/nextjs"
+import { Organization, OrganizationMembership } from "@clerk/backend"
 
 const MobileNav = () => {
     return (
@@ -122,6 +123,7 @@ const MobileNav = () => {
                     </div>
                 </form>
             </div>
+            <OrganizationSwitcher />
             <UserButton />
         </header>
     )

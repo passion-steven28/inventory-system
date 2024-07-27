@@ -1,5 +1,11 @@
 import { SalesChart } from "@/components/chart/SalesChart";
 import { ChartComp } from "@/components/ChartComp";
+import CreateOrganization from "@/components/organization/CreateOrganization";
+import { CustomOrganizationSwitcher } from "@/components/organization/CustomOrganizationSwitcher";
+import { InvitationList, InviteMember } from "@/components/organization/InvitationList";
+import { JoinedOrganizations } from "@/components/organization/JoinedOrganizations";
+import { ManageRoles } from "@/components/organization/ManageRoles";
+import { MembershipRequests } from "@/components/organization/MembershipRequests";
 import DashboardCard, {
   DashboardCardWrapper,
 } from "@/components/reusable/DashboardCard";
@@ -7,9 +13,25 @@ import Grids from "@/components/reusable/Grids";
 import LinkTableWrapper from "@/components/table/LinkTableWrapper";
 import { LowQuantityTable } from "@/components/table/LowQuantityTable";
 import { TopSellingTable } from "@/components/table/TopSellingTable";
+import { useAuth, useOrganization, useOrganizationList } from "@clerk/nextjs";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { DollarSign, DollarSignIcon, Link } from "lucide-react";
 
-export default function Home() {
+
+
+export default async function Home() {
+  const organizationId = 'org_2jnoR2jQ9ZDNMIybFTH1KcY8AJ1';
+
+  const data =  clerkClient.organizations.getOrganizationMembershipList({
+    organizationId,
+    // returns the first 10 memberships
+    limit: 10,
+  });
+  console.log((await data).data);
+  const { userId,orgRole } = auth();
+
+  console.log(userId,orgRole);
+
   return (
     <main className="grid place-content-center w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">
       <div className="md:col-start-1 md:col-end-13 md:row-start-1 md:row-end-2">

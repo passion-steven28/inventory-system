@@ -1,3 +1,4 @@
+import { product } from './../src/app/dashboard/products/columns';
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
@@ -73,3 +74,52 @@ export const getTotalProducts = query({
         return products.length;
     },
 });
+
+export const deleteProduct = mutation({
+    args: {
+        id: v.id('product'),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not authorized");
+        }
+        await ctx.db.delete(args.id);
+    },
+});
+
+// export const updateProduct = mutation({
+//     args: {
+//         id: v.string(),
+//         name: v.optional(v.string()),
+//         description: v.optional(v.string()),
+//         price: v.optional(v.number()),
+//         imageUrl: v.optional(v.string()),
+//         quantity: v.optional(v.number()),
+//         status: v.optional(v.string()),
+//         category: v.optional(v.string()),
+//         subCategory: v.optional(v.string()),
+//         tags: v.optional(v.array(v.string())),
+//         organizationId: v.optional(v.string()),
+//         userId: v.optional(v.string()),
+//     },
+//     handler: async (ctx, args) => {
+//         const identity = await ctx.auth.getUserIdentity();
+//         if (!identity) {
+//             throw new Error("Not authorized");
+//         }
+
+//         await ctx.db.patch('product', args.id, {
+//             name: args.name,
+//             description: args.description,
+//             price: args.price,
+//             imageUrl: args.imageUrl,
+//             quantity: args.quantity,
+//             status: args.status,
+//             category: args.category,
+//             subCategory: args.subCategory,
+//             organizationId: args.organizationId,
+//             userId: args.userId,
+//         });
+//     },
+// });

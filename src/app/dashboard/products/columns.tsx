@@ -1,9 +1,20 @@
 "use client"
-
 import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { useMutation } from "convex/react"
+import { api } from "../../../../convex/_generated/api"
+import { useEffect } from "react"
+import { useDeleteProduct } from "@/lib/hooks"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -21,6 +32,7 @@ export type product = {
     organizationId?: string
     userId?: string
 }
+
 
 export const columns: ColumnDef<product>[] = [
     {
@@ -50,7 +62,7 @@ export const columns: ColumnDef<product>[] = [
         header: () => <div className="text-right">Id</div>,
         cell: ({ row }) => {
 
-            return <div className="text-right font-medium">{row.getValue("id")}</div>
+            return <div className="text-right font-medium">{row.original._id?.slice(0, 5)}</div>
         },
     },
     {
@@ -113,5 +125,39 @@ export const columns: ColumnDef<product>[] = [
         cell: ({ row }) => (
             <div className="capitalize">{row.getValue("status")}</div>
         ),
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                            onClick={() => navigator.clipboard.writeText('payment id')}
+                        >
+                            Copy ID
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                            Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick = {() => console.log("delete")}
+                        >
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )
+        },
     },
 ]

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { useOrganization } from '@clerk/nextjs';
 
@@ -92,9 +92,6 @@ const Page = () => {
     const data = useQuery(api.product.getProducts, {
         organizationId: organization?.organization?.id ?? '',
     })
-    const {_id, _creationTime, name, description, price, imageUrl, quantity, categoryId, subCategoryId, status, organizationId, userId} = data?.[0] ?? {};
-
-    console.log(data?.map((item) => item));
     const dataId = data?.map((item) => item.price);
 
     return (

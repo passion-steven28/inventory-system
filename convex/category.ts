@@ -1,19 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const createProduct = mutation({
+export const createCategory = mutation({
     args: {
         name: v.string(),
         description: v.string(),
-        price: v.number(),
-        imageUrl: v.string(),
-        quantity: v.number(),
-        status: v.string(),
-        category: v.optional(v.string()),
-        subCategory: v.optional(v.string()),
-        tags: v.array(v.string()),
         organizationId: v.string(),
-        userId: v.string(),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
@@ -22,22 +14,15 @@ export const createProduct = mutation({
         }
 
 
-        await ctx.db.insert("product", {
+        await ctx.db.insert("category", {
             name: args.name,
             description: args.description,
-            price: args.price,
-            imageUrl: args.imageUrl,
-            quantity: args.quantity,
-            status: args.status,
-            category: args.category,
-            subCategory: args.subCategory,
             organizationId: args.organizationId,
-            userId: args.userId,
         });
     },
 });
 
-export const getProducts = query({
+export const getCategories = query({
     args: {
         organizationId: v.string(),
     },
@@ -47,16 +32,15 @@ export const getProducts = query({
             throw new Error("Not authorized");
         }
 
-        const products = await ctx.db.query('product')
+        const categories = await ctx.db.query('category')
             .filter((q) => q.eq(q.field('organizationId'), args.organizationId))
-            .order('desc')
             .collect();
 
-        return products;
+        return categories;
     },
 });
 
-export const getTotalProducts = query({
+export const getTotalCategories = query({
     args: {
         organizationId: v.string(),
     },
@@ -66,10 +50,10 @@ export const getTotalProducts = query({
             throw new Error("Not authorized");
         }
 
-        const products = await ctx.db.query('product')
+        const categories = await ctx.db.query('category')
             .filter((q) => q.eq(q.field('organizationId'), args.organizationId))
             .collect();
 
-        return products.length;
+        return categories.length;
     },
 });

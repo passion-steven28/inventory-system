@@ -23,6 +23,7 @@ const Page = () => {
         const name = formData.get('name') as string;
         const description = formData.get('description') as string;
         const category = formData.get('category') as string;
+        const subCategory = formData.get('subcategory') as string;
         const status = formData.get('status') as string;
         const stock = formData.get('stock') as string;
         const price = formData.get('price') as string;
@@ -40,8 +41,8 @@ const Page = () => {
             imageUrl: 'imageUrl',
             quantity: 2,
             status,
-            categoryId: 'categoryId',
-            subCategoryId: 'subCategoryId',
+            category,
+            subCategory,
             organizationId: organization.id,
             userId: user?.id,
             tags: []

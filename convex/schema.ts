@@ -19,25 +19,31 @@ export default defineSchema({
         price: v.number(),
         imageUrl: v.optional(v.string()),
         quantity: v.number(),
-        categoryId: v.optional(v.string()),
-        subCategoryId: v.optional(v.string()),
+        category: v.optional(v.string()),
+        subCategory: v.optional(v.string()),
         status: v.optional(v.string()),
         organizationId: v.string(),
         userId: v.optional(v.string()),
     }).index("organizationId", ["organizationId"])
         .index("userId", ["userId"])
-        .index("categoryId", ["categoryId"])
-        .index("subCategoryId", ["subCategoryId"])
+        .index("categoryId", ["category"])
+        .index("subCategoryId", ["subCategory"])
     ,
     category: defineTable({
         name: v.string(),
         description: v.string(),
-    }),
+        organizationId: v.string(),
+    }).index("name", ["name"])
+    .index("organizationId", ["organizationId"])
+    ,
     subcategory: defineTable({
         categoryId: v.string(),
         name: v.string(),
         description: v.string(),
-    }),
+        organizationId: v.string(),
+    }).index("categoryId", ["categoryId"])
+    .index("name", ["name"])
+    ,
     Supplier: defineTable({
         name: v.string(),
         email: v.optional(v.string()),

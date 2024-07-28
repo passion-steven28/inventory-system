@@ -14,8 +14,24 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { api } from "../../../../convex/_generated/api";
+import { useQuery } from "convex/react";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function AddProductCategory() {
+    // const organization = useOrganization();
+    const { organization } = useOrganization();
+    console.log(organization?.id);
+    const data = useQuery(api.category.getCategories, {
+        organizationId: organization?.id ?? '',
+    })
+    const subcategory = useQuery(api.subCategory.getSubCategories, {
+        organizationId: organization?.id ?? '',
+        categoryId: data?.[0]?._id ?? '',
+    })
+
+    console.log(subcategory);
+
     return (
         <Card>
             <CardHeader>
@@ -30,22 +46,22 @@ export default function AddProductCategory() {
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="clothing">Clothing</SelectItem>
-                                <SelectItem value="electronics">Electronics</SelectItem>
-                                <SelectItem value="accessories">Accessories</SelectItem>
+                                {data?.map((item) => (
+                                    <SelectItem key={item._id} value={item.name}>{item.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="grid gap-3">
                         <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                        <Select name="subcategory" defaultValue="t-shirts">
+                        <Select name="subcategory">
                             <SelectTrigger id="subcategory" aria-label="Select subcategory">
                                 <SelectValue placeholder="Select subcategory" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="t-shirts">T-Shirts</SelectItem>
-                                <SelectItem value="hoodies">Hoodies</SelectItem>
-                                <SelectItem value="sweatshirts">Sweatshirts</SelectItem>
+                                {subcategory?.map((item) => (
+                                    <SelectItem key={item._id} value={item.name}>{item.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>

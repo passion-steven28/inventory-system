@@ -16,62 +16,11 @@ import { useOrganization } from '@clerk/nextjs';
 type overallItem = {
     title: string;
     items: {
-        title: string;
         value: string;
+        title: string;
     }[]
 }
 
-const overallItems: overallItem[] = [
-    {
-        title: 'Total',
-        items: [
-            {
-                title: 'Total',
-                value: '$100,000'
-            },
-            {
-                title: 'Total',
-                value: '$200,000'
-            }
-        ]
-    },
-    {
-        title: 'Total',
-        items: [
-            {
-                title: 'Total',
-                value: '$200,000'
-            }
-        ]
-    },
-    {
-        title: 'Total',
-        items: [
-            {
-                title: 'Total',
-                value: '$200,000'
-            }
-        ]
-    },
-    {
-        title: 'Total',
-        items: [
-            {
-                title: 'Total',
-                value: '$200,000'
-            }
-        ]
-    },
-    {
-        title: 'Total',
-        items: [
-            {
-                title: 'Total',
-                value: '$200,000'
-            }
-        ]
-    },
-]
 
 // function getData(): Promise<Payment[]> {
 //     // Fetch data from your API here.
@@ -87,12 +36,75 @@ const overallItems: overallItem[] = [
 // }
 
 const Page = () => {
-    const organization = useOrganization();
+    const { organization } = useOrganization();
+    const totalProductInInventory = useQuery(api.inventory.getOrgTotalInventory, {
+        organizationId: organization?.id ?? '',
+    })
 
     const data = useQuery(api.product.getProducts, {
-        organizationId: organization?.organization?.id ?? '',
+        organizationId: organization?.id ?? '',
+    })
+    const getAllProducts = useQuery(api.product.getTotalProducts, {
+        organizationId: organization?.id ?? '',
+    })
+    const getAllCategories = useQuery(api.category.getTotalCategories, {
+        organizationId: organization?.id ?? '',
+    })
+    const getAllSubCategories = useQuery(api.subCategory.getTotalSubCategories, {
+        organizationId: organization?.id ?? '',
     })
     const dataId = data?.map((item) => item.price);
+    const overallItems: overallItem[] = [
+        {
+            title: 'products',
+            items: [
+                {
+                    value: (totalProductInInventory?.totalQuantity ?? 0).toString(),
+                    title: 'in inventory',
+                }
+            ]
+        },
+        {
+            title: 'categories',
+            items: [
+                {
+                    value: getAllCategories?.toString() ?? '0',
+                    title: 'main',
+                },
+                {
+                    value: getAllSubCategories?.toString() ?? '0',
+                    title: 'sub',
+                }
+            ]
+        },
+        {
+            title: 'Total',
+            items: [
+                {
+                    title: 'Total',
+                    value: '$200,000'
+                }
+            ]
+        },
+        {
+            title: 'Row in stock',
+            items: [
+                {
+                    title: 'Total',
+                    value: '$200,000'
+                }
+            ]
+        },
+        {
+            title: 'Out in stock',
+            items: [
+                {
+                    title: 'Total',
+                    value: '$200,000'
+                }
+            ]
+        },
+    ]
 
     return (
         <main className="flex flex-col gap-4 px-10">

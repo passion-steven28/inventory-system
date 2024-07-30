@@ -17,7 +17,7 @@ export default function AddProductDetail() {
             <CardHeader>
                 <CardTitle>Product Details</CardTitle>
                 <CardDescription>
-                    Lipsum dolor sit amet, consectetur adipiscing elit
+                    add product details
                 </CardDescription>
             </CardHeader>
             <CardContent>

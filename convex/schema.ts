@@ -22,6 +22,7 @@ export default defineSchema({
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
         status: v.optional(v.string()),
+        minStockThreshold: v.optional(v.number()),
         organizationId: v.string(),
         userId: v.optional(v.string()),
     }).index("organizationId", ["organizationId"])
@@ -31,18 +32,14 @@ export default defineSchema({
     ,
     category: defineTable({
         name: v.string(),
-        description: v.string(),
         organizationId: v.string(),
     }).index("name", ["name"])
     .index("organizationId", ["organizationId"])
     ,
     subcategory: defineTable({
-        categoryId: v.string(),
         name: v.string(),
-        description: v.string(),
         organizationId: v.string(),
-    }).index("categoryId", ["categoryId"])
-    .index("name", ["name"])
+    }).index("name", ["name"])
     ,
     Supplier: defineTable({
         name: v.string(),
@@ -79,6 +76,28 @@ export default defineSchema({
         productId: v.string(),
         quantity: v.number(),
         organizationId: v.string(),
-        lastUpdated: v.number(),
+        lastUpdated: v.optional(v.number()),
+    }).index("byProductId", ["productId"])
+    .index("byOrganizationId", ["organizationId"])
+    ,
+    inventoryTransaction: defineTable({
+        productId: v.string(),
+        inventoryId: v.string(),
+        quantity: v.number(),
+        type: v.string(),
+        organizationId: v.string(),
+        lastUpdated: v.optional(v.number()),
+    })
+    .index("byProductId", ["productId"])
+        .index("byOrganizationId", ["organizationId"])
+    .index("byInventoryId", ["inventoryId"]),
+    invoice: defineTable({
+        orderId: v.string(),
+        customerId: v.string(),
+        organizationId: v.string(),
+        status: v.string(),
+        items: v.array(v.string()),
+        total: v.number(),
+        date: v.number(),
     }),
 })

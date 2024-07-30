@@ -62,7 +62,7 @@ export const columns: ColumnDef<product>[] = [
         header: () => <div className="text-right">Id</div>,
         cell: ({ row }) => {
 
-            return <div className="text-right font-medium">{row.original._id?.slice(0, 5)}</div>
+            return <div className="text-right font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
         },
     },
     {

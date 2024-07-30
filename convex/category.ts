@@ -4,7 +4,6 @@ import { mutation, query } from "./_generated/server";
 export const createCategory = mutation({
     args: {
         name: v.string(),
-        description: v.string(),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -16,7 +15,6 @@ export const createCategory = mutation({
 
         await ctx.db.insert("category", {
             name: args.name,
-            description: args.description,
             organizationId: args.organizationId,
         });
     },

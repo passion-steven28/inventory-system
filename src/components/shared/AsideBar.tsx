@@ -2,11 +2,13 @@ import Link from "next/link"
 import {
     Bell,
     CircleUser,
+    Eye,
     Home,
     LineChart,
     Menu,
     Package,
     Package2,
+    Plus,
     Search,
     ShoppingCart,
     Users,
@@ -34,11 +36,40 @@ const AsideBarLinks = [
         name: "Orders",
         href: "/dashboard/orders",
         icon: <ShoppingCart className="h-4 w-4" />,
+        childLinks: [
+            {
+                name: "create",
+                href: "/dashboard/orders/create",
+                icon: <Plus className="h-4 w-4" />,
+            },
+            {
+                name: "view",
+                href: "/dashboard/orders/view",
+                icon: <Eye className="h-4 w-4" />,
+            }
+        ]
     },
     {
-        name: "Products",
+        name: "Inventory",
         href: "/dashboard/products",
         icon: <Package className="h-4 w-4" />,
+        childLinks: [
+            {
+                name: "create",
+                href: "/dashboard/products/create",
+                icon: <Plus className="h-4 w-4" />,
+            },
+            {
+                name: "categories",
+                href: "/dashboard/products/categories",
+                icon: <Package2 className="h-4 w-4" />,
+            },
+            {
+                name: "suppliers",
+                href: "/dashboard/products/suppliers",
+                icon: <Users className="h-4 w-4" />,
+            }
+        ]
     },
     {
         name: "Suppliers",
@@ -59,7 +90,7 @@ const AsideBarLinks = [
 
 const AsideBar = () => {
     return (
-        <aside className="hidden border-r bg-muted/40 md:block">
+        <aside className="hidden border-r bg-muted/40 md:block h-full">
             <div className="flex h-full max-h-screen flex-col gap-2">
                 <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                     <Logo

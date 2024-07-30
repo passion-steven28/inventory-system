@@ -6,8 +6,7 @@ import AddProductImage from '@/components/reusable/product/Add-product-image';
 import AddProductStatus from '@/components/reusable/product/Add-product-status';
 import AddProductStock from '@/components/reusable/product/Add-product-stock';
 import { Button } from '@/components/ui/button';
-import { test } from '@/lib/actions/product';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import React from 'react'
 import { api } from '../../../../../convex/_generated/api';
 import { useAuth, useUser } from '@clerk/nextjs';
@@ -17,6 +16,10 @@ const Page = () => {
     const { organization } = useOrganization();
     const { user } = useUser();
     const create = useMutation(api.product.createProduct);
+    const data = useQuery(api.inventory.getOrgTotalInventory, {
+        organizationId: organization?.id ?? '',
+    })
+    console.log(data?.totalQuantity);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -28,9 +31,7 @@ const Page = () => {
         const stock = formData.get('stock') as string;
         const price = formData.get('price') as string;
         const quantity = formData.get('quantity') as string;
-        const tags = formData.get('tags') as string;
         const imageUrl = formData.get('imageUrl') as string;
-        console.log(imageUrl);
 
         if (!organization || !user) return;
 
@@ -45,7 +46,6 @@ const Page = () => {
             subCategory,
             organizationId: organization.id,
             userId: user?.id,
-            tags: []
         });
     }
 
@@ -76,12 +76,12 @@ const Page = () => {
                 <section className="flex justify-between items-start gap-2">
                     <div className="flex flex-col gap-4">
                         <AddProductDetail />
-                        <AddProductStock />
                         <AddProductCategory />
                     </div>
                     <div className="flex flex-col gap-4">
                         <AddProductStatus />
-                        <AddProductImage />
+                        <AddProductStock />
+                        {/* <AddProductImage /> */}
                     </div>
                 </section>
             </form>

@@ -29,24 +29,43 @@ const Page = () => {
         const subCategory = formData.get('subcategory') as string;
         const status = formData.get('status') as string;
         const stock = formData.get('stock') as string;
-        const price = formData.get('price') as string;
-        const quantity = formData.get('quantity') as string;
+        const buyingPrice = Number(formData.get('buyingPrice')) || 0;
+        const sellingPrice = Number(formData.get('sellingPrice')) || 0;
+        const quantity = Number(formData.get('quantity')) || 0;
+        const minStockThreshold = Number(formData.get('minStockThreshold')) || 0;
         const imageUrl = formData.get('imageUrl') as string;
+        console.log(
+            'name',name,
+            'description',description,
+            'category',category,
+            'subCategory',subCategory,
+            'status',status,
+            'stock',stock,
+            'buyingPrice',buyingPrice,
+            'sellingPrice',sellingPrice,
+            'quantity', quantity,
+            'minStockThreshold',minStockThreshold,
+            'imageUrl',imageUrl,
+        )
 
         if (!organization || !user) return;
 
         create({
             name,
             description,
-            price: 100,
+            buyingPrice,
+            sellingPrice,
             imageUrl: 'imageUrl',
-            quantity: 2,
+            quantity,
+            minStockThreshold,
             status,
             category,
             subCategory,
             organizationId: organization.id,
             userId: user?.id,
-        });
+        }).then((res) => {
+            console.log(res);
+        })
     }
 
     return (

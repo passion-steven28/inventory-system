@@ -6,12 +6,22 @@ import React from 'react'
 import { columns } from './columns';
 import { DataTable } from './data-table';
 import { Button } from '@/components/ui/button';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 import { PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useMutation, useQuery } from 'convex/react';
+import { useConvexAuth, useMutation, useQuery } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { useOrganization } from '@clerk/nextjs';
+import { Id } from '../../../../convex/_generated/dataModel';
+import AddProduct from '@/components/forms/add-product';
 
 type overallItem = {
     title: string;
@@ -36,6 +46,7 @@ type overallItem = {
 // }
 
 const Page = () => {
+    const { isAuthenticated, isLoading } = useConvexAuth()
     const { organization } = useOrganization();
     const totalProductInInventory = useQuery(api.inventory.getOrgTotalInventory, {
         organizationId: organization?.id ?? '',
@@ -53,7 +64,14 @@ const Page = () => {
     const getAllSubCategories = useQuery(api.subCategory.getTotalSubCategories, {
         organizationId: organization?.id ?? '',
     })
-    const dataId = data?.map((item) => item.price);
+    const getOrgTotalInventory = useQuery(api.inventory.getOrgTotalInventory, {
+        organizationId: organization?.id ?? '',
+    })
+    const getLowestProductInInventory = useQuery(api.inventory.getLowStockProducts, {
+        organizationId: organization?.id ?? '',
+    })
+    console.log('getLowestProductInInventory', getLowestProductInInventory)
+    const dataId = data?.map((item) => item.sellingPrice);
     const overallItems: overallItem[] = [
         {
             title: 'products',
@@ -106,6 +124,13 @@ const Page = () => {
         },
     ]
 
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+    if (!isAuthenticated) {
+        return <div>You are not authenticated</div>
+    }
+
     return (
         <main className="flex flex-col gap-4 px-10">
             <div className="md:col-start-2 md:col-end-12">
@@ -122,6 +147,20 @@ const Page = () => {
                 </OverallComponent>
             </div>
             <div className="md:col-start-2 md:col-end-12 flex justify-end">
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button>
+                            Add Product
+                            <span className="ml-2">
+                                <PlusIcon className="h-4 w-4" />
+                            </span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-[100%] overflow-y-scroll">
+                        <AddProduct />
+                    </SheetContent>
+                </Sheet>
+                {/* 
                 <Link
                     href="/dashboard/edit/product"
                 >
@@ -131,7 +170,7 @@ const Page = () => {
                                 <PlusIcon className="h-4 w-4" />
                             </span>
                     </Button>
-                </Link>
+                </Link> */}
             </div>
             <section className="md:col-start-2 md:col-end-12">
                 <DataTable

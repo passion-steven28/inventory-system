@@ -16,16 +16,18 @@ export default defineSchema({
     product: defineTable({
         name: v.string(),
         description: v.string(),
-        price: v.number(),
+        buyingPrice: v.optional(v.number()),
+        sellingPrice: v.optional(v.number()),
         imageUrl: v.optional(v.string()),
         quantity: v.number(),
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
         status: v.optional(v.string()),
         minStockThreshold: v.optional(v.number()),
+        currentStock: v.optional(v.number()),
         organizationId: v.string(),
         userId: v.optional(v.string()),
-    }).index("organizationId", ["organizationId"])
+    }).index("byOrganizationId", ["organizationId"])
         .index("userId", ["userId"])
         .index("categoryId", ["category"])
         .index("subCategoryId", ["subCategory"])
@@ -41,14 +43,15 @@ export default defineSchema({
         organizationId: v.string(),
     }).index("name", ["name"])
     ,
-    Supplier: defineTable({
+    supplier: defineTable({
         name: v.string(),
         email: v.optional(v.string()),
         phone: v.optional(v.string()),
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
         organizationId: v.string(),
-    }),
+    }).index("byOrganizationId", ["organizationId"])
+    .index("byEmail", ["email"]),
     customer: defineTable({
         name: v.string(),
         email: v.optional(v.string()),
@@ -56,22 +59,32 @@ export default defineSchema({
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
         organizationId: v.string(),
-    }),
+    }).index("byOrganizationId", ["organizationId"])
+    .index("byEmail", ["email"]),
     order: defineTable({
-        productId: v.string(),
-        items: v.array(v.string()),
+        productId: v.id('product'),
+        items: v.array(v.object({
+            productId: v.id('product'),
+            quantity: v.number(),
+            price: v.number(),
+            orderId: v.id('order'),
+        })),
         quantity: v.number(),
         price: v.number(),
         status: v.string(),
-        customerId: v.string(),
+        customerId: v.id('customer'),
         organizationId: v.string(),
-    }),
+    }).index("byOrganizationId", ["organizationId"])
+    .index("byCustomerId", ["customerId"]),
     orderItem: defineTable({
-        productId: v.string(),
+        organizationId: v.string(),
+        productId: v.id('product'),
         quantity: v.number(),
         price: v.number(),
-        orderId: v.string(),
-    }),
+        orderId: v.optional(v.string()),
+    }).index("byOrganizationId", ["organizationId"])
+        .index("byOrderId", ["orderId"])
+    .index("byProductId", ["productId"]),
     inventory: defineTable({
         productId: v.string(),
         quantity: v.number(),

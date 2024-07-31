@@ -7,12 +7,14 @@ export const createProduct = mutation({
     args: {
         name: v.string(),
         description: v.string(),
-        price: v.number(),
+        buyingPrice: v.optional(v.number()),
+        sellingPrice: v.optional(v.number()),
         imageUrl: v.string(),
         quantity: v.number(),
         status: v.string(),
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
+        minStockThreshold: v.optional(v.number()),
         organizationId: v.string(),
         userId: v.string(),
     },
@@ -26,14 +28,16 @@ export const createProduct = mutation({
         const productId = await ctx.db.insert("product", {
             name: args.name,
             description: args.description,
-            price: args.price,
+            sellingPrice: args.sellingPrice,
+            buyingPrice: args.buyingPrice,
             imageUrl: args.imageUrl,
             status: args.status,
             category: args.category,
             subCategory: args.subCategory,
             organizationId: args.organizationId,
+            minStockThreshold: args.minStockThreshold,
             userId: args.userId,
-            quantity: 0
+            quantity: args.quantity,
         });
 
         // Create an inventory entry
@@ -41,6 +45,11 @@ export const createProduct = mutation({
             productId,
             quantity: args.quantity,
             organizationId: args.organizationId,
+        });
+
+        // update currentQuantity
+        await ctx.db.patch(productId, {
+            currentStock: args.quantity,
         });
 
         return { productId, inventoryId };
@@ -102,7 +111,8 @@ export const updateProduct = mutation({
         id: v.id('product'),
         name: v.optional(v.string()),
         description: v.optional(v.string()),
-        price: v.optional(v.number()),
+        sellingPrice: v.optional(v.number()),
+        buyingPrice: v.optional(v.number()),
         imageUrl: v.optional(v.string()),
         quantity: v.optional(v.number()),
         status: v.optional(v.string()),
@@ -120,7 +130,8 @@ export const updateProduct = mutation({
         await ctx.db.patch(args.id, {
             name: args.name,
             description: args.description,
-            price: args.price,
+            sellingPrice: args.sellingPrice,
+            buyingPrice: args.buyingPrice,
             imageUrl: args.imageUrl,
             quantity: args.quantity,
             status: args.status,

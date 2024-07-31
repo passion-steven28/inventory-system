@@ -39,7 +39,7 @@ export default function AddProductStock() {
                         <Label htmlFor="description">Min stockThreshold</Label>
                         <Input
                             id="threshold"
-                            name="threshold"
+                            name="minStockThreshold"
                             type="number"
                             className="w-full"
                             placeholder="10"

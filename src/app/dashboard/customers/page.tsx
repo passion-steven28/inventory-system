@@ -10,28 +10,29 @@ import { api } from '../../../../convex/_generated/api'
 import { useOrganization } from '@clerk/nextjs'
 import { columns } from './columns'
 import { DataTable } from './data-table'
+import AddCustomer from '@/components/forms/add-customer'
 
 const Page = () => {
     const { organization } = useOrganization();
-    const data = useQuery(api.supplier.getSuppliers, {
+    const data = useQuery(api.customer.getCustomers, {
         organizationId: organization?.id ?? '',
     })
 
     return (
         <main className="flex min-h-screen w-full flex-col px-4">
             <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-3xl font-bold">Suppliers</h1>
+                <h1 className="text-3xl font-bold">Customers</h1>
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button>
-                            Add Supplier
+                            Add Customer
                             <span className="ml-2">
                                 <PlusIcon className="h-4 w-4" />
                             </span>
                         </Button>
                     </SheetTrigger>
                     <SheetContent className="w-[100%] overflow-y-scroll">
-                        <AddSupplier />
+                        <AddCustomer />
                     </SheetContent>
                 </Sheet>
             </div>

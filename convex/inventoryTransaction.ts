@@ -3,10 +3,10 @@ import { v } from "convex/values";
 
 export const createInventoryTransaction = mutation({
     args: {
-        productId: v.string(),
-        inventoryId: v.string(),
+        productId: v.id('product'),
+        inventoryId: v.id('inventory'),
         quantity: v.number(),
-        type: v.string(),
+        type: v.union(v.literal("purchase"), v.literal("sale")),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -15,6 +15,31 @@ export const createInventoryTransaction = mutation({
             throw new Error("Not authorized");
         }
 
+        // Fetch the current inventory
+        const inventory = await ctx.db
+            .query("inventory")
+            .withIndex("byProductId", (q) => q.eq("productId", args.productId))
+            .unique();
+
+        if (!inventory) {
+            throw new Error("Inventory not found for the given product");
+        }
+
+        // Calculate the new quantity
+        let newQuantity = inventory.quantity;
+        switch (args.type) {
+            case "purchase":
+                newQuantity += args.quantity;
+                break;
+            case "sale":
+                newQuantity -= args.quantity;
+                if (newQuantity < 0) {
+                    throw new Error("Insufficient inventory for sale");
+                }
+                break;
+        }
+
+        // Create the inventory transaction
         const inventoryTransactionId = await ctx.db.insert("inventoryTransaction", {
             productId: args.productId,
             inventoryId: args.inventoryId,
@@ -24,34 +49,20 @@ export const createInventoryTransaction = mutation({
             lastUpdated: Date.now()
         });
 
-        let newQuantity = 0;
-        // fetch inventory based on productId
-        const inventory = await ctx.db.query("inventory")
-            .withIndex("byProductId", (q) => q.eq("productId", args.productId))
-            .unique();
+        // Update the inventory
+        await ctx.db.patch(args.inventoryId, {
+            quantity: newQuantity,
+            lastUpdated: Date.now()
+        });
 
-        if (!inventory) {
-            return;
-        }
+        // Fetch the updated inventory
+        const updatedInventory = await ctx.db.get(args.inventoryId);
 
-        switch (args.type) {
-            case "purchase":
-                newQuantity = inventory.quantity - args.quantity;
-                break;
-            case "sale":
-                newQuantity = inventory.quantity + args.quantity;
-                break;
-            default:
-                break;
-        }
-
-
-        // update inventory
-        // await ctx.db.patch(args.inventoryId, {
-        //     quantity: newQuantity,
-        //     lastUpdated: Date.now()
-        // });
-
-        return { productId: args.productId, inventoryId: args.inventoryId };
+        return {
+            inventoryTransactionId,
+            productId: args.productId,
+            inventoryId: args.inventoryId,
+            newQuantity: updatedInventory?.quantity ?? newQuantity
+        };
     },
 });

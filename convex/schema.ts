@@ -8,11 +8,15 @@ export default defineSchema({
         clerkId: v.string(),
         name: v.string(),
     }),
+
+
     // clerk organizations
     organization: defineTable({
         clerkOrgId: v.string(),
         name: v.string(),
     }),
+
+
     product: defineTable({
         name: v.string(),
         description: v.string(),
@@ -32,17 +36,24 @@ export default defineSchema({
         .index("categoryId", ["category"])
         .index("subCategoryId", ["subCategory"])
     ,
+
+
     category: defineTable({
         name: v.string(),
         organizationId: v.string(),
     }).index("name", ["name"])
-    .index("organizationId", ["organizationId"])
+        .index("organizationId", ["organizationId"])
     ,
+
+
     subcategory: defineTable({
         name: v.string(),
         organizationId: v.string(),
     }).index("name", ["name"])
     ,
+
+
+
     supplier: defineTable({
         name: v.string(),
         email: v.optional(v.string()),
@@ -51,7 +62,9 @@ export default defineSchema({
         imageUrl: v.optional(v.string()),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-    .index("byEmail", ["email"]),
+        .index("byEmail", ["email"]),
+    
+    
     customer: defineTable({
         name: v.string(),
         email: v.optional(v.string()),
@@ -60,39 +73,40 @@ export default defineSchema({
         imageUrl: v.optional(v.string()),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-    .index("byEmail", ["email"]),
+        .index("byEmail", ["email"]),
+
+    
     order: defineTable({
-        productId: v.id('product'),
-        items: v.array(v.object({
-            productId: v.id('product'),
-            quantity: v.number(),
-            price: v.number(),
-            orderId: v.id('order'),
-        })),
-        quantity: v.number(),
-        price: v.number(),
-        status: v.string(),
         customerId: v.id('customer'),
         organizationId: v.string(),
+        status: v.string(),
+        totalPrice: v.number(),
+        orderDate: v.string(), // or v.number() if you're using timestamps
     }).index("byOrganizationId", ["organizationId"])
-    .index("byCustomerId", ["customerId"]),
+        .index("byCustomerId", ["customerId"]),
+    
+    
     orderItem: defineTable({
-        organizationId: v.string(),
+        orderId: v.id('order'),
         productId: v.id('product'),
         quantity: v.number(),
         price: v.number(),
-        orderId: v.optional(v.string()),
+        organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
         .index("byOrderId", ["orderId"])
-    .index("byProductId", ["productId"]),
+        .index("byProductId", ["productId"]),
+    
+    
     inventory: defineTable({
         productId: v.string(),
         quantity: v.number(),
         organizationId: v.string(),
         lastUpdated: v.optional(v.number()),
     }).index("byProductId", ["productId"])
-    .index("byOrganizationId", ["organizationId"])
+        .index("byOrganizationId", ["organizationId"])
     ,
+
+
     inventoryTransaction: defineTable({
         productId: v.string(),
         inventoryId: v.string(),
@@ -101,9 +115,11 @@ export default defineSchema({
         organizationId: v.string(),
         lastUpdated: v.optional(v.number()),
     })
-    .index("byProductId", ["productId"])
+        .index("byProductId", ["productId"])
         .index("byOrganizationId", ["organizationId"])
-    .index("byInventoryId", ["inventoryId"]),
+        .index("byInventoryId", ["inventoryId"]),
+    
+    
     invoice: defineTable({
         orderId: v.string(),
         customerId: v.string(),

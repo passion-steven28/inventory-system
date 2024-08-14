@@ -81,7 +81,7 @@ export const getLastOrders = query({
 
         } else {
             // Handle the case where no order was found
-            throw new Error('No order found');
+            console.log('No order found');
         }
     }
 });

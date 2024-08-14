@@ -15,10 +15,10 @@ type Props = {}
 
 function Invoice({ }: Props) {
     const {organization} = useOrganization()
-    const lastOrder = useQuery(api.order.getLastOrders, {
-        organizationId: organization?.id ?? '',
-    })
-    console.log(lastOrder)
+    // const lastOrder = useQuery(api.order.getLastOrders, {
+    //     organizationId: organization?.id ?? '',
+    // })
+    // console.log(lastOrder)
 
     return (
         <Card

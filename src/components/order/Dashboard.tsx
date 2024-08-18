@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import Image from "next/image"
 import Link from "next/link"
@@ -77,10 +79,18 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import AddOrder from '../forms/add-order'
+import { useOrganization } from '@clerk/nextjs'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
 
 type Props = {}
 
 function Dashboard({ }: Props) {
+    const { organization } = useOrganization()
+    const totalPriceInLast7Days = useQuery(api.order.getOrdersInSpecDuration, {
+        organizationId: organization?.id ?? '',
+        duration: 'last7days',
+    })
     return (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
             <Card
@@ -107,7 +117,7 @@ function Dashboard({ }: Props) {
             <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
                     <CardDescription>This Week</CardDescription>
-                    <CardTitle className="text-4xl">$1,329</CardTitle>
+                    <CardTitle className="text-4xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-xs text-muted-foreground">
@@ -115,13 +125,13 @@ function Dashboard({ }: Props) {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Progress value={25} aria-label="25% increase" />
+                    <Progress value={35} aria-label="25% increase" />
                 </CardFooter>
             </Card>
             <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
                     <CardDescription>This Month</CardDescription>
-                    <CardTitle className="text-4xl">$5,329</CardTitle>
+                    <CardTitle className="text-4xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-xs text-muted-foreground">

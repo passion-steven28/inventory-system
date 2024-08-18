@@ -32,7 +32,7 @@ import {
     MultiSelectorTrigger,
 } from "@/components/extension/multi-select-component"
 import { Label } from "../ui/label"
-import { TrashIcon } from "lucide-react"
+import { Trash2Icon, TrashIcon } from "lucide-react"
 import test from "node:test"
 import { Id } from "../../../convex/_generated/dataModel"
 
@@ -194,7 +194,7 @@ const AddOrder = () => {
                                             size={'icon'}
                                             className="p-2"
                                         >
-                                            <TrashIcon className="h-5 w-5" />
+                                            <Trash2Icon className="h-5 w-5" />
                                         </Button>
                                     </div>
                                 </div>

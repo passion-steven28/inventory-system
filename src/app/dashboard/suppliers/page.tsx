@@ -17,7 +17,9 @@ const Page = () => {
         organizationId: organization?.id ?? '',
     })
 
-    return (
+    console.log('data', data)
+
+    return (    
         <main className="flex min-h-screen w-full flex-col px-4">
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Suppliers</h1>

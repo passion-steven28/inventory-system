@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +22,10 @@ import { useState } from "react"
 import { useOrganization, useUser } from "@clerk/nextjs"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../../convex/_generated/api"
+import { Id } from "../../../convex/_generated/dataModel"
+import { Label } from "../ui/label"
+import { TrashIcon } from "lucide-react"
+import { toast } from "sonner"
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -33,14 +37,18 @@ const formSchema = z.object({
     category: z.string(),
     subCategory: z.string(),
     status: z.string(),
-    quantity: z.number(),
-    minStockThreshold: z.number(),
-    buyingPrice: z.number().min(1, {
+    quantity: z.string(),
+    minStockThreshold: z.string(),
+    buyingPrice: z.string().min(1, {
         message: "Buying price must be at least 1 shilling.",
     }),
-    sellingPrice: z.number().min(1, {
+    sellingPrice: z.string().min(1, {
         message: "Selling price must be at least 1 shilling.",
     }),
+    properties: z.array(z.object({
+        name: z.string(),
+        value: z.union([z.string(), z.number()]),
+    })),
 })
 
 type Props = {}
@@ -48,7 +56,7 @@ type Props = {}
 export default function AddProduct({ }: Props) {
     const { organization } = useOrganization();
     const { user } = useUser();
-    const createProduct = useMutation(api.product.createProduct);
+    const [categoryId, setCategoryId] = useState<string>('undefined');
     const products = useQuery(api.inventory.getOrgTotalInventory, {
         organizationId: organization?.id ?? '',
     })
@@ -62,22 +70,64 @@ export default function AddProduct({ }: Props) {
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {},
     })
+    const { control } = useForm();
+    const { handleSubmit } = useForm();
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "properties",
+    });
+
+    const HandleCategoryChange = (value: any) => {
+        setCategoryId(value);
+    }
+    const createProduct = useMutation(api.product.createProduct);
+    const getCategoryId = useQuery(api.category.getCategoryByName, {
+        name: categoryId ?? '',
+        organizationId: organization?.id ?? '',
+    })
+    const getSubCategories = useQuery(api.subCategory.getSubCategoryById, {
+        categoryId: getCategoryId?._id as Id<'category'>,
+        organizationId: organization?.id ?? '',
+    })
+
 
     // 2. Define a submit handler.
     function OnSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log('values', values)
+        const name = values.title;
+        const description = values.description;
+        const category = values.category;
+        const subCategory = values.subCategory;
+        const status = values.status;
+        const quantity = Number(values.quantity);
+        const minStockThreshold = Number(values.minStockThreshold);
+        const buyingPrice = Number(values.buyingPrice);
+        const sellingPrice = Number(values.sellingPrice);
 
-        // Apply the suggested edit
-        const buyingPrice = Number(form.getValues('buyingPrice')) || 0;
-        const sellingPrice = Number(form.getValues('sellingPrice')) || 0;
+        const properties = values.properties.map((property) => {
+            return {
+                name: property.name,
+                value: property.value,
+            }
+        })
 
-        // You can now use buyingPrice and sellingPrice as needed
-        console.log('Buying Price:', buyingPrice);
-        console.log('Selling Price:', sellingPrice);
+        createProduct({
+            name,
+            description,
+            category,
+            subCategory,
+            status,
+            quantity,
+            minStockThreshold,
+            buyingPrice,
+            sellingPrice,
+            properties,
+            organizationId: organization?.id ?? '',
+        }).then((res) => {
+            toast.success("Product created successfully");
+        })
+        console.log(sellingPrice, buyingPrice)
     }
 
     return (
@@ -112,6 +162,71 @@ export default function AddProduct({ }: Props) {
                             )}
                         />
                     </InputCardComponent>
+                    <InputCardComponent title="Product property">
+                        <div className="flex flex-col items-center justify-center mt-4">
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="space-y-2">
+                                    <Label>property {index + 1}</Label>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <div>
+                                                <Controller
+                                                    name={`properties.${index}.name`}
+                                                    control={form.control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="name"
+                                                            {...field}
+                                                        />
+                                                    )}
+                                                />
+                                                {form.formState.errors.properties?.[index]?.name && (
+                                                    <p className="text-red-500">
+                                                        {form.formState.errors.properties[index].name.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <Controller
+                                                    name={`properties.${index}.value`}
+                                                    control={form.control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            placeholder="value"
+                                                            {...field}
+                                                        />
+                                                    )}
+                                                />
+                                                {form.formState.errors.properties?.[index]?.value && (
+                                                    <p className="text-red-500">
+                                                        {form.formState.errors.properties[index].value.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                onClick={() => remove(index)}
+                                                variant="destructive"
+                                                size={'icon'}
+                                                className="p-2"
+                                            >
+                                                <TrashIcon className="h-5 w-5" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <Button
+                                type="button"
+                                onClick={() => append({ name: "", value: "" })}
+                                className="w-full my-2"
+                            >
+                                Add property
+                            </Button>
+                        </div>
+                    </InputCardComponent>
                     <InputCardComponent title="Product category">
                         <FormField
                             control={form.control}
@@ -121,8 +236,11 @@ export default function AddProduct({ }: Props) {
                                     <FormLabel>product category</FormLabel>
                                     <FormControl>
                                         <Select
-                                            defaultValue="inStock"
-                                            {...field}>
+                                            onValueChange={(e) => {
+                                                HandleCategoryChange(e);
+                                                field.onChange(e);
+                                            }}
+                                        >
                                             <SelectTrigger id="category" aria-label="Select category">
                                                 <SelectValue placeholder="Select category" />
                                             </SelectTrigger>
@@ -146,12 +264,12 @@ export default function AddProduct({ }: Props) {
                                 <FormItem>
                                     <FormLabel>product sub category</FormLabel>
                                     <FormControl>
-                                        <Select {...field}>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <SelectTrigger id="subCategory" aria-label="Select sub category">
                                                 <SelectValue placeholder="Select sub category" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {subcategory?.map((item) => (
+                                                {getSubCategories?.map((item) => (
                                                     <SelectItem key={item._id} value={item.name}>{item.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -170,7 +288,7 @@ export default function AddProduct({ }: Props) {
                                 <FormItem>
                                     <FormLabel>product status</FormLabel>
                                     <FormControl>
-                                        <Select {...field}>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <SelectTrigger id="status" aria-label="Select status">
                                                 <SelectValue placeholder="Select status" />
                                             </SelectTrigger>
@@ -195,7 +313,7 @@ export default function AddProduct({ }: Props) {
                                     <FormItem>
                                         <FormLabel>stock quantity</FormLabel>
                                         <FormControl>
-                                            <Input type="number" placeholder="100" {...field} />
+                                            <Input placeholder="100" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

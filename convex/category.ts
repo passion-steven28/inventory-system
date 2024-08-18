@@ -38,6 +38,26 @@ export const getCategories = query({
     },
 });
 
+export const getCategoryByName = query({
+    args: {
+        name: v.string(),
+        organizationId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not authorized");
+        }
+
+        const category = await ctx.db.query('category')
+            .withIndex('organizationId', (q) => q.eq('organizationId', args.organizationId))
+            .filter((q) => q.eq(q.field('name'), args.name))
+            .unique()
+
+        return category;
+    },
+});
+
 export const getTotalCategories = query({
     args: {
         organizationId: v.string(),

@@ -6,22 +6,40 @@ import { getOrgTotalInventory } from './inventory';
 export const createProduct = mutation({
     args: {
         name: v.string(),
-        description: v.string(),
+        description: v.optional(v.string()),
         buyingPrice: v.optional(v.number()),
         sellingPrice: v.optional(v.number()),
-        imageUrl: v.string(),
+        imageUrl: v.optional(v.string()),
         quantity: v.number(),
         status: v.string(),
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
         minStockThreshold: v.optional(v.number()),
+        properties: v.optional(v.array(v.object({
+            name: v.string(),
+            value: v.union(v.string(), v.number()),
+        }))),
         organizationId: v.string(),
-        userId: v.string(),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) {
             throw new Error("Not authorized");
+        }
+
+        let productIds: Id<'property'>[] = [];
+
+        // add properties
+        if (args.properties) {
+            for (const property of args.properties) {
+                await ctx.db.insert("property", {
+                    organizationId: args.organizationId,
+                    name: property.name,
+                    value: property.value,
+                }).then((propertyId) => {
+                    productIds.push(propertyId);
+                });
+            }
         }
 
         // Insert the product
@@ -30,15 +48,14 @@ export const createProduct = mutation({
             description: args.description,
             sellingPrice: args.sellingPrice,
             buyingPrice: args.buyingPrice,
-            imageUrl: args.imageUrl,
             status: args.status,
             category: args.category,
             subCategory: args.subCategory,
             organizationId: args.organizationId,
             minStockThreshold: args.minStockThreshold,
-            userId: args.userId,
+            propertyId: productIds,
             quantity: args.quantity,
-        });
+        })
 
         // Create an inventory entry
         const inventoryId = await ctx.db.insert("inventory", {
@@ -67,7 +84,7 @@ export const getProducts = query({
         }
 
         const products = await ctx.db.query('product')
-            .filter((q) => q.eq(q.field('organizationId'), args.organizationId))
+            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .order('desc')
             .collect();
 

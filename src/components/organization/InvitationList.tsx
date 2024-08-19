@@ -98,7 +98,7 @@ const SelectRole = (props: SelectRoleProps) => {
                     res.data.map((roles) => roles.key as OrganizationCustomRoleKey)
                 )
             })
-    }, [organization?.id])
+    }, [organization])
 
     if (fetchedRoles.length === 0) return null
 

@@ -38,6 +38,7 @@ const CreateCategoryComp = () => {
                 const newSubCategory = await createSubCategory({
                     name: s,
                     organizationId: organization?.id ?? '',
+                    categoryId: ""
                 });
                 toast("Subcategory has been created.");
                 setS("");

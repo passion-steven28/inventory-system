@@ -62,7 +62,6 @@ const Page = () => {
             category,
             subCategory,
             organizationId: organization.id,
-            userId: user?.id,
         }).then((res) => {
             console.log(res);
         })

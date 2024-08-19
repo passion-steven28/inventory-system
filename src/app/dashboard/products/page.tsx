@@ -14,6 +14,14 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -22,6 +30,8 @@ import { api } from '../../../../convex/_generated/api';
 import { useOrganization } from '@clerk/nextjs';
 import { Id } from '../../../../convex/_generated/dataModel';
 import AddProduct from '@/components/forms/add-product';
+import AddBrand from '@/components/forms/add-brand';
+import AddCategory from '@/components/forms/add-category';
 
 type overallItem = {
     title: string;
@@ -157,6 +167,35 @@ const Page = () => {
                         </Button>
                     </SheetTrigger>
                     <SheetContent className="w-[100%] overflow-y-scroll">
+                        <div className="flex gap-4">
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                        category <PlusIcon className="h-5 w-5" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add Category</DialogTitle>
+                                        <AddCategory />
+                                    </DialogHeader>
+                                </DialogContent>
+                            </Dialog>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                        brand <PlusIcon className="h-5 w-5" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add Brand</DialogTitle>
+                                        <AddBrand />
+                                    </DialogHeader>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+
                         <AddProduct />
                     </SheetContent>
                 </Sheet>

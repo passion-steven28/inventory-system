@@ -30,6 +30,7 @@ export default defineSchema({
         minStockThreshold: v.optional(v.number()),
         currentStock: v.optional(v.number()),
         propertyId: v.optional(v.array(v.id('property'))),
+        brandId: v.optional(v.id('brand')),
         tags: v.optional(v.array(v.id('tag'))),
         organizationId: v.string(),
         userId: v.optional(v.string()),
@@ -42,6 +43,13 @@ export default defineSchema({
     property: defineTable({
         name: v.string(),
         value: v.union(v.string(), v.number()),
+        organizationId: v.string(),
+    }).index("byOrganizationId", ["organizationId"])
+        .index("name", ["name"])
+    ,
+
+    brand: defineTable({
+        name: v.string(),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
         .index("name", ["name"])

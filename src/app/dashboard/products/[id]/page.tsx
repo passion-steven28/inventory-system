@@ -1,47 +1,21 @@
+'use client'
+
 import ProductDetailList from '@/components/reusable/ProductDetailList'
 import ProductStockDetails from '@/components/reusable/ProductStockDetails'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { useOrganization } from '@clerk/nextjs'
+import { useQuery } from 'convex/react'
 import { Download, PencilIcon } from 'lucide-react'
 import React from 'react'
+import { api } from '../../../../../convex/_generated/api'
+import { Id } from '../../../../../convex/_generated/dataModel'
 
-const details = [
-    {
-        title: 'Name',
-        value: 'Product 1'
-    },
-    {
-        title: 'Description',
-        value: 'This is a product description'
-    },
-    {
-        title: 'Category',
-        value: 'Electronics'
-    },
-    {
-        title: 'Brand',
-        value: 'Apple'
-    },
-    {
-        title: 'Price',
-        value: '$100'
-    },
-]
 
-const attributes = [
-    {
-        title: 'Color',
-        value: 'Red'
-    },
-    {
-        title: 'Size',
-        value: 'XL'
-    },
-    {
-        title: 'Material',
-        value: 'Aluminum'
-    },
-]
+type ProductDetail = {
+    title: string;
+    value: string;
+}[]
 
 const stockDetails = [
     {
@@ -58,19 +32,48 @@ const stockDetails = [
     },
 ]
 
-const page = ({ params }: { params: { id: string } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
+    const { organization } = useOrganization();
+    console.log(params.id);
+    const product = useQuery(api.product.getProduct, {
+        id: params.id as Id<'product'>,
+        organizationId: organization?.id ?? '',
+    });
+
+    const details = [
+        {
+            title: 'Name',
+            value: product?.product.name ?? ''
+        },
+        {
+            title: 'Description',
+            value: product?.product.description ?? ''
+        },
+        {
+            title: 'Category',
+            value: product?.product.category ?? ''
+        },
+        {
+            title: 'Brand',
+            value: 'brand'
+        },
+        {
+            title: 'Price',
+            value: product?.product.sellingPrice ?? ''
+        },
+    ]
+
+    const attributes = product?.productProperties?.map((property) => ({
+        title: property?.name ?? '',
+        value: property?.value ?? '',
+    })) ?? [];
+
     return (
         <main className="flex flex-col gap-4 px-10">
             <section className='container flex flex-col gap-4'>
                 <header className="flex items-center justify-between">
-                    <h1 className="text-4xl font-bold">Product {params.id}</h1>
+                    <h1 className="text-4xl font-bold">Product: {product?.product.name}</h1>
                     <div className="flex gap-4">
-                        <Button>
-                            <span>
-                                <PencilIcon className="h-4 w-4" />
-                            </span>
-                            <h1>Edit</h1>
-                        </Button>
                         <Button>
                             <span>
                                 <Download className="h-4 w-4" />
@@ -89,7 +92,6 @@ const page = ({ params }: { params: { id: string } }) => {
                         <ProductStockDetails
                             src="/images/ipad.jpg"
                             alt="Product stock details"
-                            items={stockDetails}
                         />
                     </div>
                 </div>
@@ -98,4 +100,4 @@ const page = ({ params }: { params: { id: string } }) => {
     )
 }
 
-export default page
+export default Page

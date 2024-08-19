@@ -15,6 +15,8 @@ import { useMutation } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import { useEffect } from "react"
 import { useDeleteProduct } from "@/lib/hooks"
+import { useRouter } from "next/navigation"
+import { useDelete, useEdit, useRedirect } from "@/hooks/tableColomnActions"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -32,7 +34,6 @@ export type product = {
     organizationId?: string
     userId?: string
 }
-
 
 export const columns: ColumnDef<product>[] = [
     {
@@ -130,6 +131,21 @@ export const columns: ColumnDef<product>[] = [
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
+            // Directly use router.push in the onClick handler
+            const HandleView = () => {
+                const productId = row.original._id ?? "";
+                useRedirect(productId);
+            };
+
+            const HandleEdit = () => {
+                const productId = row.original._id ?? "";
+                useEdit(productId);
+            };
+
+            const HandleDelete = () => {
+                const productId = row.original._id ?? "";
+                useDelete(productId);
+            };
 
             return (
                 <DropdownMenu>
@@ -141,18 +157,14 @@ export const columns: ColumnDef<product>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText('payment id')}
-                        >
-                            Copy ID
+                        <DropdownMenuItem onClick={HandleView}>
+                            View More
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={HandleEdit}>
                             Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick = {() => console.log("delete")}
-                        >
+                        <DropdownMenuItem onClick={HandleDelete}>
                             Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>

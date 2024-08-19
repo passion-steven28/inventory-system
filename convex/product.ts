@@ -14,6 +14,7 @@ export const createProduct = mutation({
         status: v.string(),
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
+        brand: v.optional(v.id('brand')),
         minStockThreshold: v.optional(v.number()),
         properties: v.optional(v.array(v.object({
             name: v.string(),
@@ -51,6 +52,7 @@ export const createProduct = mutation({
             status: args.status,
             category: args.category,
             subCategory: args.subCategory,
+            brandId: args.brand,
             organizationId: args.organizationId,
             minStockThreshold: args.minStockThreshold,
             propertyId: productIds,
@@ -89,6 +91,35 @@ export const getProducts = query({
             .collect();
 
         return products;
+    },
+});
+
+export const getProduct = query({
+    args: {
+        id: v.id('product'),
+        organizationId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not authorized");
+        }
+        const products = await ctx.db.query('product')
+            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
+            .filter((q) => q.eq(q.field('_id'), args.id))
+            .unique()
+        
+            
+        if (products) { 
+            console.log(products);
+            const productPropertiesId = products?.propertyId as unknown as Id<'property'>[];
+            let productProperties = [];
+            for (const propertyId of productPropertiesId) { 
+                const property = await ctx.db.get(propertyId);
+                productProperties.push(property);
+            }
+            return { product: products, productProperties };
+        }
     },
 });
 

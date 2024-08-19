@@ -13,6 +13,14 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import FormInput from "./form-input"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
@@ -24,8 +32,10 @@ import { useMutation, useQuery } from "convex/react"
 import { api } from "../../../convex/_generated/api"
 import { Id } from "../../../convex/_generated/dataModel"
 import { Label } from "../ui/label"
-import { TrashIcon } from "lucide-react"
+import { PlusIcon, TrashIcon } from "lucide-react"
 import { toast } from "sonner"
+import AddBrand from "./add-brand"
+import AddCategory from "./add-category"
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -36,6 +46,7 @@ const formSchema = z.object({
     description: z.string().optional(),
     category: z.string(),
     subCategory: z.string(),
+    brand: z.string(),
     status: z.string(),
     quantity: z.string(),
     minStockThreshold: z.string(),
@@ -91,6 +102,9 @@ export default function AddProduct({ }: Props) {
         categoryId: getCategoryId?._id as Id<'category'>,
         organizationId: organization?.id ?? '',
     })
+    const getBrands = useQuery(api.brand.getBrands, {
+        organizationId: organization?.id ?? '',
+    })
 
 
     // 2. Define a submit handler.
@@ -99,6 +113,7 @@ export default function AddProduct({ }: Props) {
         const description = values.description;
         const category = values.category;
         const subCategory = values.subCategory;
+        const brand = values.brand as Id<'brand'>;
         const status = values.status;
         const quantity = Number(values.quantity);
         const minStockThreshold = Number(values.minStockThreshold);
@@ -117,6 +132,7 @@ export default function AddProduct({ }: Props) {
             description,
             category,
             subCategory,
+            brand,
             status,
             quantity,
             minStockThreshold,
@@ -280,6 +296,36 @@ export default function AddProduct({ }: Props) {
                             )}
                         />
                     </InputCardComponent>
+                    <InputCardComponent title="Product brand">
+                        <FormField
+                            control={form.control}
+                            name="brand"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>product brand</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={(e) => {
+                                                field.onChange(e);
+                                            }}
+                                        >
+                                            <SelectTrigger id="brand" aria-label="Select brand">
+                                                <SelectValue placeholder="Select brand" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {getBrands?.map((item) => (
+                                                    <SelectItem
+                                                        key={item._id}
+                                                        value={item.name}>{item.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </InputCardComponent>
                     <InputCardComponent title="Product status">
                         <FormField
                             control={form.control}
@@ -373,10 +419,10 @@ type CardProps = {
     title: string
     children: React.ReactNode
 }
-const InputCardComponent = ({ title, children }: CardProps) => {
+const InputCardComponent = ({ title, children, }: CardProps) => {
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

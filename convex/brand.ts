@@ -1,11 +1,9 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
 
-export const createCategory = mutation({
+export const createBrand = mutation({
     args: {
         name: v.string(),
-        subCategory: v.optional(v.array(v.string())),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -14,25 +12,14 @@ export const createCategory = mutation({
             throw new Error("Not authorized");
         }
 
-
-        const category = await ctx.db.insert("category", {
+        await ctx.db.insert("brand", {
             name: args.name,
             organizationId: args.organizationId,
-        }).then(async (res) => {
-            if (args.subCategory) {
-                for (const subCategory of args.subCategory) {
-                    await ctx.db.insert("subcategory", {
-                        name: subCategory,
-                        categoryId: res,
-                        organizationId: args.organizationId,
-                    });
-                }
-            }
         });
     },
 });
 
-export const getCategories = query({
+export const getBrands = query({
     args: {
         organizationId: v.string(),
     },
@@ -42,15 +29,15 @@ export const getCategories = query({
             throw new Error("Not authorized");
         }
 
-        const categories = await ctx.db.query('category')
+        const brands = await ctx.db.query('brand')
             .filter((q) => q.eq(q.field('organizationId'), args.organizationId))
             .collect();
 
-        return categories;
+        return brands;
     },
 });
 
-export const getCategoryByName = query({
+export const getBrandByName = query({
     args: {
         name: v.string(),
         organizationId: v.string(),
@@ -61,16 +48,16 @@ export const getCategoryByName = query({
             throw new Error("Not authorized");
         }
 
-        const category = await ctx.db.query('category')
-            .withIndex('organizationId', (q) => q.eq('organizationId', args.organizationId))
+        const brand = await ctx.db.query('brand')
+            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .filter((q) => q.eq(q.field('name'), args.name))
             .unique()
 
-        return category;
+        return brand;
     },
 });
 
-export const getTotalCategories = query({
+export const getTotalBrands = query({
     args: {
         organizationId: v.string(),
     },
@@ -80,10 +67,10 @@ export const getTotalCategories = query({
             throw new Error("Not authorized");
         }
 
-        const categories = await ctx.db.query('category')
+        const brands = await ctx.db.query('brand')
             .filter((q) => q.eq(q.field('organizationId'), args.organizationId))
             .collect();
 
-        return categories.length;
+        return brands.length;
     },
 });

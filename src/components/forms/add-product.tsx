@@ -34,8 +34,14 @@ import { Id } from "../../../convex/_generated/dataModel"
 import { Label } from "../ui/label"
 import { PlusIcon, TrashIcon } from "lucide-react"
 import { toast } from "sonner"
-import AddBrand from "./add-brand"
-import AddCategory from "./add-category"
+import MultipleSelector, { Option } from '../ui/multi-select';
+
+
+const tagSchema = z.object({
+    label: z.string(),
+    value: z.string(),
+    disable: z.boolean().optional(),
+});
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -47,15 +53,7 @@ const formSchema = z.object({
     category: z.string(),
     subCategory: z.string(),
     brand: z.string(),
-    status: z.string(),
-    quantity: z.string(),
-    minStockThreshold: z.string(),
-    buyingPrice: z.string().min(1, {
-        message: "Buying price must be at least 1 shilling.",
-    }),
-    sellingPrice: z.string().min(1, {
-        message: "Selling price must be at least 1 shilling.",
-    }),
+    tags: z.array(tagSchema).min(1).optional(),
     properties: z.array(z.object({
         name: z.string(),
         value: z.union([z.string(), z.number()]),
@@ -66,18 +64,25 @@ type Props = {}
 
 export default function AddProduct({ }: Props) {
     const { organization } = useOrganization();
-    const { user } = useUser();
     const [categoryId, setCategoryId] = useState<string>('undefined');
-    const products = useQuery(api.inventory.getOrgTotalInventory, {
+
+    
+    const category = useQuery(api.category.getCategories, {
         organizationId: organization?.id ?? '',
     })
-
-    const category = useQuery(api.category.getCategories, {
+    const tags = useQuery(api.tags.getTags, {
         organizationId: organization?.id ?? '',
     })
     const subcategory = useQuery(api.subCategory.getSubCategories, {
         organizationId: organization?.id ?? '',
     })
+
+    const OPTIONS: Option[] = tags?.map((tag) => ({
+        label: tag.name,
+        value: tag.name,
+    })) ?? [];
+    console.log(OPTIONS)
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -114,11 +119,6 @@ export default function AddProduct({ }: Props) {
         const category = values.category;
         const subCategory = values.subCategory;
         const brand = values.brand as Id<'brand'>;
-        const status = values.status;
-        const quantity = Number(values.quantity);
-        const minStockThreshold = Number(values.minStockThreshold);
-        const buyingPrice = Number(values.buyingPrice);
-        const sellingPrice = Number(values.sellingPrice);
 
         const properties = values.properties.map((property) => {
             return {
@@ -133,17 +133,13 @@ export default function AddProduct({ }: Props) {
             category,
             subCategory,
             brand,
-            status,
-            quantity,
-            minStockThreshold,
-            buyingPrice,
-            sellingPrice,
             properties,
             organizationId: organization?.id ?? '',
         }).then((res) => {
             toast.success("Product created successfully");
         })
-        console.log(sellingPrice, buyingPrice)
+
+        form.reset()
     }
 
     return (
@@ -316,7 +312,7 @@ export default function AddProduct({ }: Props) {
                                                 {getBrands?.map((item) => (
                                                     <SelectItem
                                                         key={item._id}
-                                                        value={item.name}>{item.name}</SelectItem>
+                                                        value={item._id}>{item.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -326,87 +322,29 @@ export default function AddProduct({ }: Props) {
                             )}
                         />
                     </InputCardComponent>
-                    <InputCardComponent title="Product status">
+                    <InputCardComponent title="Product tags">
                         <FormField
                             control={form.control}
-                            name="status"
+                            name="tags"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>product status</FormLabel>
+                                    <FormLabel>Tags</FormLabel>
                                     <FormControl>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <SelectTrigger id="status" aria-label="Select status">
-                                                <SelectValue placeholder="Select status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="inStock">inStock</SelectItem>
-                                                <SelectItem value="lowStock">lowStock</SelectItem>
-                                                <SelectItem value="outOfStock">outOfStock</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        <MultipleSelector
+                                            {...field}
+                                            defaultOptions={OPTIONS}
+                                            placeholder="Select tags you like..."
+                                            emptyIndicator={
+                                                <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                                    no results found.
+                                                </p>
+                                            }
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                    </InputCardComponent>
-                    <InputCardComponent title="Product stock">
-                        <div className="grid grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="quantity"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>stock quantity</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="100" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="minStockThreshold"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Min stockThreshold</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="10" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="buyingPrice"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Buying price</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="1000" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="sellingPrice"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Selling price</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="1500" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
                     </InputCardComponent>
                     <Button type="submit">Submit</Button>
                 </section>

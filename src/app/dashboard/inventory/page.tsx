@@ -33,6 +33,8 @@ import AddProduct from '@/components/forms/add-product';
 import AddBrand from '@/components/forms/add-brand';
 import AddCategory from '@/components/forms/add-category';
 import AddTags from '@/components/forms/add-tags';
+import PurchaseProduct from '@/components/forms/purchase-product';
+import AddSupplier from '@/components/forms/add-supplier';
 
 type overallItem = {
     title: string;
@@ -72,7 +74,6 @@ const Page = () => {
     const getAllSubCategories = useQuery(api.subCategory.getTotalSubCategories, {
         organizationId: organization?.id ?? '',
     })
-    
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -87,7 +88,7 @@ const Page = () => {
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button>
-                            Add Product
+                            purchase product
                             <span className="ml-2">
                                 <PlusIcon className="h-4 w-4" />
                             </span>
@@ -95,47 +96,72 @@ const Page = () => {
                     </SheetTrigger>
                     <SheetContent className="w-[100%] overflow-y-scroll">
                         <div className="flex gap-4">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                        Product <PlusIcon className="h-5 w-5" />
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent className="w-[100%] overflow-y-scroll">
+                                    <div className="flex gap-4">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" className="gap-1">
+                                                    category <PlusIcon className="h-5 w-5" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Add Category</DialogTitle>
+                                                    <AddCategory />
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" className="gap-1">
+                                                    brand <PlusIcon className="h-5 w-5" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Add Brand</DialogTitle>
+                                                    <AddBrand />
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" className="gap-1">
+                                                    brand <PlusIcon className="h-5 w-5" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Add Tags</DialogTitle>
+                                                    <AddTags />
+                                                </DialogHeader>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </div>
+                                    <AddProduct />
+                                </SheetContent>
+                            </Sheet>
                             <Dialog>
                                 <DialogTrigger asChild>
                                     <Button variant="outline" size="sm" className="gap-1">
-                                        category <PlusIcon className="h-5 w-5" />
+                                        Supplier <PlusIcon className="h-5 w-5" />
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Add Category</DialogTitle>
-                                        <AddCategory />
+                                        <DialogTitle>Add Supplier</DialogTitle>
                                     </DialogHeader>
-                                </DialogContent>
-                            </Dialog>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-1">
-                                        brand <PlusIcon className="h-5 w-5" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Add Brand</DialogTitle>
-                                        <AddBrand />
-                                    </DialogHeader>
-                                </DialogContent>
-                            </Dialog>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-1">
-                                        brand <PlusIcon className="h-5 w-5" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Add Tags</DialogTitle>
-                                        <AddTags />
-                                    </DialogHeader>
+                                    <AddSupplier />
                                 </DialogContent>
                             </Dialog>
                         </div>
-                        <AddProduct />
+                        <PurchaseProduct />
                     </SheetContent>
                 </Sheet>
                 {/* 

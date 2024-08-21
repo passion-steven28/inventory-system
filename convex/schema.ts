@@ -1,3 +1,4 @@
+import { product } from './../src/app/dashboard/products/columns';
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -20,25 +21,30 @@ export default defineSchema({
     product: defineTable({
         name: v.string(),
         description: v.optional(v.string()),
-        buyingPrice: v.optional(v.number()),
-        sellingPrice: v.optional(v.number()),
         imageUrl: v.optional(v.string()),
-        quantity: v.number(),
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
-        status: v.optional(v.string()),
-        minStockThreshold: v.optional(v.number()),
-        currentStock: v.optional(v.number()),
-        propertyId: v.optional(v.array(v.id('property'))),
+        userId: v.optional(v.string()),
+        organizationId: v.string(),
         brandId: v.optional(v.id('brand')),
         tags: v.optional(v.array(v.id('tag'))),
-        organizationId: v.string(),
-        userId: v.optional(v.string()),
+        productMetrics: v.optional(v.id('product_metrics')),
+        propertyId: v.optional(v.array(v.id('property'))),
     }).index("byOrganizationId", ["organizationId"])
         .index("userId", ["userId"])
         .index("categoryId", ["category"])
         .index("subCategoryId", ["subCategory"])
     ,
+
+    product_metrics: defineTable({
+        productId: v.id('product'),
+        createdAt: v.optional(v.number()),
+        updatedAt: v.optional(v.number()),
+        totalSales: v.optional(v.number()),
+        weeklySales: v.optional(v.number()),
+        monthlySales: v.optional(v.number()),
+        yearlySales: v.optional(v.number()),
+    }),
 
     property: defineTable({
         name: v.string(),
@@ -126,13 +132,34 @@ export default defineSchema({
     
     
     inventory: defineTable({
-        productId: v.string(),
-        quantity: v.number(),
         organizationId: v.string(),
+        productId: v.id('product'),
+        supplierId: v.id('supplier'),
+        buyingPrice: v.optional(v.number()),
+        sellingPrice: v.optional(v.number()),
+        status: v.optional(v.string()),
+        minStockThreshold: v.optional(v.number()),
+        openStock: v.number(),
+        currentStock: v.optional(v.number()),
+        createdAt: v.optional(v.number()),
         lastUpdated: v.optional(v.number()),
     }).index("byProductId", ["productId"])
+        .index("bySupplierId", ["supplierId"])
         .index("byOrganizationId", ["organizationId"])
     ,
+
+    inventory_adjustment: defineTable({
+        productId: v.string(),
+        inventoryId: v.string(),
+        quantity: v.number(),
+        type: v.string(),
+        description: v.optional(v.string()),
+        organizationId: v.string(),
+        lastUpdated: v.optional(v.number()),
+    })
+        .index("byProductId", ["productId"])
+        .index("byOrganizationId", ["organizationId"])
+        .index("byInventoryId", ["inventoryId"]),
 
 
     inventoryTransaction: defineTable({

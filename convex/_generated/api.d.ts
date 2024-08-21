@@ -26,6 +26,7 @@ import type * as organization from "../organization.js";
 import type * as product from "../product.js";
 import type * as subCategory from "../subCategory.js";
 import type * as supplier from "../supplier.js";
+import type * as tags from "../tags.js";
 import type * as users from "../users.js";
 
 /**
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   product: typeof product;
   subCategory: typeof subCategory;
   supplier: typeof supplier;
+  tags: typeof tags;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

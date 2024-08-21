@@ -10,6 +10,7 @@ import {
     Package2,
     Plus,
     Search,
+    Shirt,
     ShoppingCart,
     Users,
 } from "lucide-react"
@@ -51,7 +52,7 @@ const AsideBarLinks = [
     },
     {
         name: "Inventory",
-        href: "/dashboard/products",
+        href: "/dashboard/inventory",
         icon: <Package className="h-4 w-4" />,
         childLinks: [
             {
@@ -70,6 +71,11 @@ const AsideBarLinks = [
                 icon: <Users className="h-4 w-4" />,
             }
         ]
+    },
+    {
+        name: "Products",
+        href: "/dashboard/products",
+        icon: <Shirt className="h-4 w-4" />,
     },
     {
         name: "Suppliers",

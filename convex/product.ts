@@ -4,14 +4,14 @@ import { Id } from './_generated/dataModel';
 
 export const createProduct = mutation({
     args: {
-        name: v.string(),
+        productName: v.string(),
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
         category: v.optional(v.string()),
         subCategory: v.optional(v.string()),
         brand: v.optional(v.id('brand')),
         properties: v.optional(v.array(v.object({
-            name: v.string(),
+            propertyName: v.string(),
             value: v.union(v.string(), v.number()),
         }))),
         organizationId: v.string(),
@@ -29,7 +29,7 @@ export const createProduct = mutation({
             for (const property of args.properties) {
                 await ctx.db.insert("property", {
                     organizationId: args.organizationId,
-                    name: property.name,
+                    propertyName: property.propertyName,
                     value: property.value,
                 }).then((propertyId) => {
                     productIds.push(propertyId);
@@ -39,7 +39,7 @@ export const createProduct = mutation({
 
         // Insert the product
         const productId = await ctx.db.insert("product", {
-            name: args.name,
+            productName: args.productName,
             description: args.description,
             category: args.category,
             subCategory: args.subCategory,
@@ -88,7 +88,6 @@ export const getProduct = query({
         
             
         if (products) { 
-            console.log(products);
             const productPropertiesId = products?.propertyId as unknown as Id<'property'>[];
             let productProperties = [];
             for (const propertyId of productPropertiesId) { 
@@ -134,7 +133,7 @@ export const deleteProduct = mutation({
 export const updateProduct = mutation({
     args: {
         id: v.id('product'),
-        name: v.optional(v.string()),
+        productName: v.optional(v.string()),
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
         category: v.optional(v.string()),
@@ -148,7 +147,7 @@ export const updateProduct = mutation({
         }
 
         await ctx.db.patch(args.id, {
-            name: args.name,
+            productName: args.productName,
             description: args.description,
             imageUrl: args.imageUrl,
             category: args.category,

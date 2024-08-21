@@ -1,3 +1,6 @@
+import { product } from './../src/app/dashboard/products/columns';
+import { supplier } from './../src/app/dashboard/suppliers/columns';
+import { products } from './../src/components/HeroSection';
 import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { Id } from './_generated/dataModel';
@@ -100,7 +103,7 @@ export const getInventoryByProduct = query({
     },
 });
 
-export const getTotalInventory = query({
+export const getAllInventory = query({
     args: {
         organizationId: v.string(),
     },
@@ -113,7 +116,37 @@ export const getTotalInventory = query({
         const inventory = await ctx.db.query('inventory')
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .collect();
+        
+        if (inventory) {
+            let inventoryDetails = [];
 
-        return inventory;
-    },
+            for (const item of inventory) {
+                const productItems = await ctx.db.query('product')
+                    .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
+                    .filter((q) => q.eq(q.field('_id'), item.productId))
+                    .collect();
+                
+                const supplierItems = await ctx.db.query('supplier')
+                    .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
+                    .filter((q) => q.eq(q.field('_id'), item.supplierId))
+                    .collect();
+                
+                // Assuming there's only one product and supplier per inventory item
+                const product = productItems[0];
+                const supplier = supplierItems[0];
+
+                // Create a new object for this inventory item that includes product and supplier details
+                const inventoryDetail = {
+                    ...item, // Spread the original inventory item properties
+                    ...product, // Add the product detail
+                    ...supplier, // Add the supplier detail
+                };
+
+                inventoryDetails.push(inventoryDetail);
+                console.log(inventoryDetails);
+            }
+
+            return { products: inventoryDetails};
+        }
+    }
 });

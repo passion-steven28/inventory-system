@@ -48,12 +48,12 @@ export default function AddCategory() {
 
     // 2. Define a submit handler.
     function OnSubmit(values: z.infer<typeof formSchema>) {
-        const name = values.name;
+        const categoryName = values.name;
         const subCategory = values.subCategory;
 
         console.log(subCategory)
         addCategory({
-            name,
+            categoryName,
             subCategory,
             organizationId: organization?.id ?? '',
         }).then((res) => {

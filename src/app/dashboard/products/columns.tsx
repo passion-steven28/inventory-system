@@ -23,14 +23,12 @@ import { useDelete, useEdit, useRedirect } from "@/hooks/tableColomnActions"
 export type product = {
     _id?: string
     _creationTime?: number
-    name?: string
+    productName?: string
     description?: string
     price?: number
     imageUrl?: string
-    quantity?: number
     categoryId?: string
     subCategoryId?: string
-    status?: string
     organizationId?: string
     userId?: string
 }
@@ -67,7 +65,7 @@ export const columns: ColumnDef<product>[] = [
         },
     },
     {
-        accessorKey: "name",
+        accessorKey: "productName",
         header: ({ column }) => {
             return (
                 <Button
@@ -79,30 +77,6 @@ export const columns: ColumnDef<product>[] = [
                 </Button>
             )
         }
-    },
-    {
-        accessorKey: "price",
-        header: () => <div className="text-right">Price</div>,
-        cell: ({ row }) => {
-            const price = parseFloat(row.getValue("price"))
-
-            // Format the amount as a dollar amount
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(price)
-
-            return <div className="text-right font-medium">{formatted}</div>
-        },
-    },
-    {
-        accessorKey: "quantity",
-        header: () => <div className="text-right">Quantity</div>,
-        cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("quantity"))
-
-            return <div className="text-right font-medium">{amount}</div>
-        },
     },
     {
         accessorKey: "category",
@@ -119,13 +93,6 @@ export const columns: ColumnDef<product>[] = [
         cell: ({ row }) => {
             return <div className="text-right font-medium">{row.getValue("subCategory")}</div>
         },
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
-        ),
     },
     {
         id: "actions",

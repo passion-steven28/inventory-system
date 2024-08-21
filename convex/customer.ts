@@ -3,7 +3,7 @@ import { mutation, query, QueryCtx } from "./_generated/server";
 
 export const createCustomer = mutation({
     args: {
-        name: v.string(),
+        customerName: v.string(),
         email: v.optional(v.string()),
         phone: v.optional(v.string()),
         description: v.optional(v.string()),
@@ -18,7 +18,7 @@ export const createCustomer = mutation({
 
         // Insert the customer
         const customerId = await ctx.db.insert("customer", {
-            name: args.name,
+            customerName: args.customerName,
             description: args.description,
             phone: args.phone,
             email: args.email,
@@ -81,7 +81,7 @@ export const deleteCustomer = mutation({
 export const updateCustomer = mutation({
     args: {
         id: v.id('customer'),
-        name: v.optional(v.string()),
+        customerName: v.optional(v.string()),
         email: v.optional(v.string()),
         phone: v.optional(v.string()),
         description: v.optional(v.string()),
@@ -95,7 +95,7 @@ export const updateCustomer = mutation({
         }
 
         await ctx.db.patch(args.id, {
-            name: args.name,
+            customerName: args.customerName,
             email: args.email,
             phone: args.phone,
             description: args.description,

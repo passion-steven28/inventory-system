@@ -50,7 +50,7 @@ const AddSupplier = () => {
         if (!organization || !isAuthenticated) return;
         createSupplier({
             organizationId: organization.id,
-            name: values.username,
+            supplierName: values.username,
             email: values.email,
             phone: values.phone,
             description: values.description,
@@ -72,7 +72,7 @@ const AddSupplier = () => {
                             <FormItem>
                                 <FormLabel>Username</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="supplier name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -85,7 +85,7 @@ const AddSupplier = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="supplier email" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -98,7 +98,7 @@ const AddSupplier = () => {
                             <FormItem>
                                 <FormLabel>Phone</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="supplier phone" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -111,7 +111,7 @@ const AddSupplier = () => {
                             <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

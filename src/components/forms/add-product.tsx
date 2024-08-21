@@ -78,8 +78,8 @@ export default function AddProduct({ }: Props) {
     })
 
     const OPTIONS: Option[] = tags?.map((tag) => ({
-        label: tag.name,
-        value: tag.name,
+        label: tag.tagName,
+        value: tag._id,
     })) ?? [];
     console.log(OPTIONS)
 
@@ -100,7 +100,7 @@ export default function AddProduct({ }: Props) {
     }
     const createProduct = useMutation(api.product.createProduct);
     const getCategoryId = useQuery(api.category.getCategoryByName, {
-        name: categoryId ?? '',
+        categoryName: categoryId ?? '',
         organizationId: organization?.id ?? '',
     })
     const getSubCategories = useQuery(api.subCategory.getSubCategoryById, {
@@ -114,7 +114,7 @@ export default function AddProduct({ }: Props) {
 
     // 2. Define a submit handler.
     function OnSubmit(values: z.infer<typeof formSchema>) {
-        const name = values.title;
+        const productName = values.title;
         const description = values.description;
         const category = values.category;
         const subCategory = values.subCategory;
@@ -122,13 +122,13 @@ export default function AddProduct({ }: Props) {
 
         const properties = values.properties.map((property) => {
             return {
-                name: property.name,
+                propertyName: property.name,
                 value: property.value,
             }
         })
 
         createProduct({
-            name,
+            productName,
             description,
             category,
             subCategory,
@@ -260,7 +260,7 @@ export default function AddProduct({ }: Props) {
                                                 {category?.map((item) => (
                                                     <SelectItem
                                                         key={item._id}
-                                                        value={item.name}>{item.name}</SelectItem>
+                                                        value={item.categoryName}>{item.categoryName}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -282,7 +282,11 @@ export default function AddProduct({ }: Props) {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {getSubCategories?.map((item) => (
-                                                    <SelectItem key={item._id} value={item.name}>{item.name}</SelectItem>
+                                                    <SelectItem
+                                                        key={item._id}
+                                                        value={item.subCategoryName}>
+                                                        {item.subCategoryName}
+                                                    </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -312,7 +316,7 @@ export default function AddProduct({ }: Props) {
                                                 {getBrands?.map((item) => (
                                                     <SelectItem
                                                         key={item._id}
-                                                        value={item._id}>{item.name}</SelectItem>
+                                                        value={item._id}>{item.brandName}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>

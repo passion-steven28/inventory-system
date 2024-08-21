@@ -53,7 +53,7 @@ const AddCustomer = () => {
     const getProducts = useQuery(api.product.getProducts, {
         organizationId: organization?.id ?? '',
     })?.map((item) => ({
-        label: item.name,
+        label: item.productName,
         value: item._id,
     })) ?? [];
     const getCustomers = useQuery(api.customer.getCustomers, {
@@ -67,7 +67,7 @@ const AddCustomer = () => {
         if (!organization || !isAuthenticated) return;
         createCustomer({
             organizationId: organization.id,
-            name: values.username,
+            customerName: values.username,
             email: values.email,
             phone: values.phone,
             description: values.description,

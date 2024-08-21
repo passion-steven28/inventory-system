@@ -36,10 +36,10 @@ export default function AddBrand() {
 
     // 2. Define a submit handler.
     function OnSubmit(values: z.infer<typeof formSchema>) {
-        const name = values.name;
+        const brandName = values.name;
 
         addBrand({
-            name,
+            brandName,
             organizationId: organization?.id ?? '',
         }).then((res) => {
             toast.success("Brand created successfully");

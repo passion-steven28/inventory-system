@@ -62,18 +62,19 @@ const Page = () => {
     const { isAuthenticated, isLoading } = useConvexAuth()
     const { organization } = useOrganization();
 
-    const data = useQuery(api.product.getProducts, {
+    const getAllInventory = useQuery(api.inventory.getAllInventory, {
         organizationId: organization?.id ?? '',
-    })
-    const getAllProducts = useQuery(api.product.getTotalProducts, {
-        organizationId: organization?.id ?? '',
-    })
-    const getAllCategories = useQuery(api.category.getTotalCategories, {
-        organizationId: organization?.id ?? '',
-    })
-    const getAllSubCategories = useQuery(api.subCategory.getTotalSubCategories, {
-        organizationId: organization?.id ?? '',
-    })
+    });
+
+    console.log(getAllInventory)
+
+    let data: any[] = []; // Ensure data is typed as an array of any
+
+    if (getAllInventory && getAllInventory.products) {
+        data.push(...getAllInventory.products); // Spread operator to concatenate arrays
+    }
+
+    console.log(data);
 
     if (isLoading) {
         return <div>Loading...</div>

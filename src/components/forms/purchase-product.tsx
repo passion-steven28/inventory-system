@@ -109,7 +109,7 @@ export default function PurchaseProduct({ }: Props) {
                                                 {getProducts?.map((item) => (
                                                     <SelectItem
                                                         key={item._id}
-                                                        value={item._id}>{item.name}</SelectItem>
+                                                        value={item._id}>{item.productName}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -138,7 +138,7 @@ export default function PurchaseProduct({ }: Props) {
                                                 {getSuppliers?.map((item) => (
                                                     <SelectItem
                                                         key={item._id}
-                                                        value={item._id}>{item.name}</SelectItem>
+                                                        value={item._id}>{item.supplierName}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>

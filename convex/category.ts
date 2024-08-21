@@ -4,7 +4,7 @@ import { Id } from "./_generated/dataModel";
 
 export const createCategory = mutation({
     args: {
-        name: v.string(),
+        categoryName: v.string(),
         subCategory: v.optional(v.array(v.string())),
         organizationId: v.string(),
     },
@@ -16,13 +16,13 @@ export const createCategory = mutation({
 
 
         const category = await ctx.db.insert("category", {
-            name: args.name,
+            categoryName: args.categoryName,
             organizationId: args.organizationId,
         }).then(async (res) => {
             if (args.subCategory) {
                 for (const subCategory of args.subCategory) {
                     await ctx.db.insert("subcategory", {
-                        name: subCategory,
+                        subCategoryName: subCategory,
                         categoryId: res,
                         organizationId: args.organizationId,
                     });
@@ -52,7 +52,7 @@ export const getCategories = query({
 
 export const getCategoryByName = query({
     args: {
-        name: v.string(),
+        categoryName: v.string(),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -63,7 +63,7 @@ export const getCategoryByName = query({
 
         const category = await ctx.db.query('category')
             .withIndex('organizationId', (q) => q.eq('organizationId', args.organizationId))
-            .filter((q) => q.eq(q.field('name'), args.name))
+            .filter((q) => q.eq(q.field('categoryName'), args.categoryName))
             .unique()
 
         return category;

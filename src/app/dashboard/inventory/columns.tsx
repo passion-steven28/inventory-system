@@ -22,17 +22,14 @@ import { useDelete, useEdit, useRedirect } from "@/hooks/tableColomnActions"
 // You can use a Zod schema here if you want.
 export type product = {
     _id?: string
-    _creationTime?: number
-    name?: string
-    description?: string
-    price?: number
-    imageUrl?: string
-    quantity?: number
-    categoryId?: string
-    subCategoryId?: string
+    productName?: string
+    buyingPrice?: number
+    sellingPrice?: number
+    openStock?: number
+    category?: string
+    subCategory?: string
     status?: string
-    organizationId?: string
-    userId?: string
+    supplierName?: string
 }
 
 export const columns: ColumnDef<product>[] = [
@@ -62,12 +59,11 @@ export const columns: ColumnDef<product>[] = [
         accessorKey: "id",
         header: () => <div className="text-right">Id</div>,
         cell: ({ row }) => {
-
             return <div className="text-right font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
         },
     },
     {
-        accessorKey: "name",
+        accessorKey: "productName",
         header: ({ column }) => {
             return (
                 <Button
@@ -81,18 +77,17 @@ export const columns: ColumnDef<product>[] = [
         }
     },
     {
-        accessorKey: "price",
-        header: () => <div className="text-right">Price</div>,
+        accessorKey: "buying price",
+        header: () => <div className="text-right">Buying Price</div>,
         cell: ({ row }) => {
-            const price = parseFloat(row.getValue("price"))
-
-            // Format the amount as a dollar amount
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(price)
-
-            return <div className="text-right font-medium">{formatted}</div>
+            return <div className="text-right font-medium">{row.original.buyingPrice}</div>
+        },
+    },
+    {
+        accessorKey: "selling price",
+        header: () => <div className="text-right">Selling Price</div>,
+        cell: ({ row }) => {
+            return <div className="text-right font-medium">{row.original.sellingPrice}</div>
         },
     },
     {
@@ -101,7 +96,7 @@ export const columns: ColumnDef<product>[] = [
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("quantity"))
 
-            return <div className="text-right font-medium">{amount}</div>
+            return <div className="text-right font-medium">{row.original.openStock}</div>
         },
     },
     {
@@ -109,7 +104,7 @@ export const columns: ColumnDef<product>[] = [
         header: () => <div className="text-right">Category</div>,
         cell: ({ row }) => {
 
-            return <div className="text-right font-medium">{row.getValue("category")}</div>
+            return <div className="text-right font-medium">{row.original.category}</div>
         },
     },
 
@@ -117,14 +112,21 @@ export const columns: ColumnDef<product>[] = [
         accessorKey: "subCategory",
         header: () => <div className="text-right">SubCategory</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("subCategory")}</div>
+            return <div className="text-right font-medium">{row.original.subCategory}</div>
         },
     },
     {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
+            <div className="capitalize">{row.original.status}</div>
+        ),
+    },
+    {
+        accessorKey: "supplier",
+        header: "Supplier",
+        cell: ({ row }) => (
+            <div className="capitalize">{row.original.supplierName}</div>
         ),
     },
     {

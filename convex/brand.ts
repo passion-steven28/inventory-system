@@ -3,7 +3,7 @@ import { mutation, query } from "./_generated/server";
 
 export const createBrand = mutation({
     args: {
-        name: v.string(),
+        brandName: v.string(),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -13,7 +13,7 @@ export const createBrand = mutation({
         }
 
         await ctx.db.insert("brand", {
-            name: args.name,
+            brandName: args.brandName,
             organizationId: args.organizationId,
         });
     },
@@ -39,7 +39,7 @@ export const getBrands = query({
 
 export const getBrandByName = query({
     args: {
-        name: v.string(),
+        brandName: v.string(),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -50,7 +50,7 @@ export const getBrandByName = query({
 
         const brand = await ctx.db.query('brand')
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
-            .filter((q) => q.eq(q.field('name'), args.name))
+            .filter((q) => q.eq(q.field('brandName'), args.brandName))
             .unique()
 
         return brand;

@@ -70,7 +70,7 @@ const AddOrder = () => {
     const getProducts: Option[] = useQuery(api.product.getProducts, {
         organizationId: organization?.id ?? '',
     })?.map((item) => ({
-        label: item.name,
+        label: item.productName,
         value: item._id,
     })) ?? [];
     const getCustomers = useQuery(api.customer.getCustomers, {
@@ -119,7 +119,7 @@ const AddOrder = () => {
                                                 key={item._id}
                                                 value={item._id}
                                             >
-                                                {item.name}
+                                                {item.customerName}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

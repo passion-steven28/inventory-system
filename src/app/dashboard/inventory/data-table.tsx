@@ -50,8 +50,6 @@ export function DataTable<TData, TValue>({
             columnFilters,
         },
     })
-    console.log(table.getState().rowSelection) //get the row selection state - { 1: true, 2: false, etc... }
-    console.log(table.getSelectedRowModel().rows.map((row) => row._valuesCache)) //get the selected rows
 
 
     return (

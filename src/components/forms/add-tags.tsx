@@ -36,10 +36,10 @@ export default function AddTags() {
 
     // 2. Define a submit handler.
     function OnSubmit(values: z.infer<typeof formSchema>) {
-        const name = values.name;
+        const tagName = values.name;
 
         addTags({
-            name,
+            tagName,
             organizationId: organization?.id ?? '',
         }).then((res) => {
             toast.success("Tags created successfully");

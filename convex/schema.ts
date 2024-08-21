@@ -19,7 +19,7 @@ export default defineSchema({
 
 
     product: defineTable({
-        name: v.string(),
+        productName: v.string(),
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
         category: v.optional(v.string()),
@@ -47,49 +47,49 @@ export default defineSchema({
     }),
 
     property: defineTable({
-        name: v.string(),
+        propertyName: v.string(),
         value: v.union(v.string(), v.number()),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-        .index("name", ["name"])
+        .index("propertyName", ["propertyName"])
     ,
 
     brand: defineTable({
-        name: v.string(),
+        brandName: v.string(),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-        .index("name", ["name"])
+        .index("brandName", ["brandName"])
     ,
 
     tag: defineTable({
-        name: v.string(),
+        tagName: v.string(),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-        .index("name", ["name"])
+        .index("tagName", ["tagName"])
     ,
 
 
     category: defineTable({
-        name: v.string(),
+        categoryName: v.string(),
         organizationId: v.string(),
-    }).index("name", ["name"])
+    }).index("categoryName", ["categoryName"])
         .index("organizationId", ["organizationId"])
     ,
 
 
     subcategory: defineTable({
-        name: v.string(),
+        subCategoryName: v.string(),
         categoryId: v.id('category'),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-        .index("name", ["name"])
+        .index("subCategoryName", ["subCategoryName"])
         .index("categoryId", ["categoryId"])
     ,
 
 
 
     supplier: defineTable({
-        name: v.string(),
+        supplierName: v.string(),
         email: v.optional(v.string()),
         phone: v.optional(v.string()),
         description: v.optional(v.string()),
@@ -100,7 +100,7 @@ export default defineSchema({
     
     
     customer: defineTable({
-        name: v.string(),
+        customerName: v.string(),
         email: v.optional(v.string()),
         phone: v.optional(v.string()),
         description: v.optional(v.string()),

@@ -5,7 +5,7 @@ import { resolve } from "path";
 
 export const createSubCategory = mutation({
     args: {
-        name: v.string(),
+        subCategoryName: v.string(),
         categoryId: v.string(),
         organizationId: v.string(),
     },
@@ -17,7 +17,7 @@ export const createSubCategory = mutation({
 
 
         await ctx.db.insert("subcategory", {
-            name: args.name,
+            subCategoryName: args.subCategoryName,
             categoryId: args.categoryId as Id<"category">,
             organizationId: args.organizationId,
         });

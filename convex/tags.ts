@@ -3,7 +3,7 @@ import { mutation, query } from "./_generated/server";
 
 export const createTag = mutation({
     args: {
-        name: v.string(),
+        tagName: v.string(),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -13,7 +13,7 @@ export const createTag = mutation({
         }
 
         await ctx.db.insert("tag", {
-            name: args.name,
+            tagName: args.tagName,
             organizationId: args.organizationId,
         });
     },
@@ -39,7 +39,7 @@ export const getTags = query({
 
 export const getTagByName = query({
     args: {
-        name: v.string(),
+        tagName: v.string(),
         organizationId: v.string(),
     },
     handler: async (ctx, args) => {
@@ -50,7 +50,7 @@ export const getTagByName = query({
 
         const tag = await ctx.db.query('tag')
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
-            .filter((q) => q.eq(q.field('name'), args.name))
+            .filter((q) => q.eq(q.field('tagName'), args.tagName))
             .unique()
 
         return tag;

@@ -58,10 +58,10 @@ export const columns: ColumnDef<product>[] = [
     },
     {
         accessorKey: "id",
-        header: () => <div className="text-right">Id</div>,
+        header: () => <div className="text-left">Id</div>,
         cell: ({ row }) => {
 
-            return <div className="text-right font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
+            return <div className="text-left font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
         },
     },
     {
@@ -80,18 +80,17 @@ export const columns: ColumnDef<product>[] = [
     },
     {
         accessorKey: "category",
-        header: () => <div className="text-right">Category</div>,
+        header: () => <div className="text-left">Category</div>,
         cell: ({ row }) => {
-
-            return <div className="text-right font-medium">{row.getValue("category")}</div>
+            return <div className="text-left font-medium">{row.getValue("category")}</div>
         },
     },
 
     {
         accessorKey: "subCategory",
-        header: () => <div className="text-right">SubCategory</div>,
+        header: () => <div className="text-left">SubCategory</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("subCategory")}</div>
+            return <div className="text-left font-medium">{row.getValue("subCategory")}</div>
         },
     },
     {

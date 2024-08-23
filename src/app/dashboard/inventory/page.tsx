@@ -3,7 +3,7 @@
 import OverallCard from '@/components/reusable/OverallCard';
 import OverallComponent from '@/components/reusable/OverallComponent'
 import React from 'react'
-import { columns } from './columns';
+import { columns, product } from './columns';
 import { DataTable } from './data-table';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,6 +35,7 @@ import AddCategory from '@/components/forms/add-category';
 import AddTags from '@/components/forms/add-tags';
 import PurchaseProduct from '@/components/forms/purchase-product';
 import AddSupplier from '@/components/forms/add-supplier';
+import { Option } from '@/components/ui/multi-select';
 
 type overallItem = {
     title: string;
@@ -44,19 +45,6 @@ type overallItem = {
     }[]
 }
 
-
-// function getData(): Promise<Payment[]> {
-//     // Fetch data from your API here.
-//     return [
-//         {
-//             id: "728ed52f",
-//             amount: 100,
-//             status: "pending",
-//             email: "m@example.com",
-//         },
-//         // ...
-//     ]
-// }
 
 const Page = () => {
     const { isAuthenticated, isLoading } = useConvexAuth()
@@ -68,13 +56,10 @@ const Page = () => {
 
     console.log(getAllInventory)
 
-    let data: any[] = []; // Ensure data is typed as an array of any
+    
+    let data: any = getAllInventory;
 
-    if (getAllInventory && getAllInventory.products) {
-        data.push(...getAllInventory.products); // Spread operator to concatenate arrays
-    }
-
-    console.log(data);
+    // console.log(data);
 
     if (isLoading) {
         return <div>Loading...</div>

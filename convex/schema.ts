@@ -114,7 +114,7 @@ export default defineSchema({
         customerId: v.id('customer'), // many to many
         organizationId: v.string(), // many to one
         status: v.string(),
-        totalPrice: v.number(),
+        totalPrice: v.optional(v.number()), // sum of orderItems.price
         orderDate: v.string(), // or v.number() if you're using timestamps
     }).index("byOrganizationId", ["organizationId"])
         .index("byCustomerId", ["customerId"]),
@@ -122,9 +122,8 @@ export default defineSchema({
     
     orderItem: defineTable({
         orderId: v.id('order'), // many to one
-        productId: v.id('product'), // many to many
+        productId: v.id('inventory'), // many to many
         quantity: v.number(),
-        price: v.number(),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
         .index("byOrderId", ["orderId"])

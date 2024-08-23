@@ -17,19 +17,47 @@ import { useEffect } from "react"
 import { useDeleteProduct } from "@/lib/hooks"
 import { useRouter } from "next/navigation"
 import { useDelete, useEdit, useRedirect } from "@/hooks/tableColomnActions"
+import { Badge } from "@/components/ui/badge"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type product = {
-    _id?: string
-    productName?: string
-    buyingPrice?: number
-    sellingPrice?: number
-    openStock?: number
-    category?: string
-    subCategory?: string
-    status?: string
-    supplierName?: string
+    item?: {
+        buyingPrice?: number;
+        createdAt?: number;
+        currentStock?: number;
+        lastUpdated?: number;
+        minStockThreshold?: number;
+        openStock?: number;
+        organizationId?: string;
+        productId?: string;
+        sellingPrice?: number;
+        status?: string;
+        supplierId?: string;
+        _creationTime?: number;
+        _id?: string;
+    };
+    product?: {
+        brandId?: string;
+        category?: string;
+        description?: string;
+        organizationId?: string;
+        productName?: string;
+        propertyId?: string[];
+        subCategory?: string;
+        _creationTime?: number;
+        _id?: string;
+    };
+    supplier?: {
+        description?: string;
+        email?: string;
+        imageUrl?: string;
+        organizationId?: string;
+        phone?: string;
+        supplierName?: string;
+        _creationTime?: number;
+        _id?: string;
+    };
 }
 
 export const columns: ColumnDef<product>[] = [
@@ -59,7 +87,7 @@ export const columns: ColumnDef<product>[] = [
         accessorKey: "id",
         header: () => <div className="text-right">Id</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
+            // return <div className="text-right font-medium">{`${row.original.item?._id?.slice(0, 5)}...`}</div>
         },
     },
     {
@@ -74,20 +102,23 @@ export const columns: ColumnDef<product>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-        }
+        },
+        cell: ({ row }) => {
+            return <div className="text-center font-medium">{row.original?.product?.productName || 'N/A'}</div>
+        },
     },
     {
         accessorKey: "buying price",
         header: () => <div className="text-right">Buying Price</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.original.buyingPrice}</div>
+            return <div className="text-right font-medium">{row.original.item?.buyingPrice}</div>
         },
     },
     {
         accessorKey: "selling price",
         header: () => <div className="text-right">Selling Price</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.original.sellingPrice}</div>
+            return <div className="text-right font-medium">{row.original.item?.sellingPrice}</div>
         },
     },
     {
@@ -96,7 +127,7 @@ export const columns: ColumnDef<product>[] = [
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("quantity"))
 
-            return <div className="text-right font-medium">{row.original.openStock}</div>
+            return <div className="text-right font-medium">{row.original.item?.openStock}</div>
         },
     },
     {
@@ -104,7 +135,7 @@ export const columns: ColumnDef<product>[] = [
         header: () => <div className="text-right">Category</div>,
         cell: ({ row }) => {
 
-            return <div className="text-right font-medium">{row.original.category}</div>
+            return <div className="text-right font-medium">{row.original.product?.category}</div>
         },
     },
 
@@ -112,21 +143,25 @@ export const columns: ColumnDef<product>[] = [
         accessorKey: "subCategory",
         header: () => <div className="text-right">SubCategory</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.original.subCategory}</div>
+            return <div className="text-right font-medium">{row.original.product?.subCategory}</div>
         },
     },
     {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-            <div className="capitalize">{row.original.status}</div>
+            <Badge
+                variant={row.original.item?.status === 'rowInStock' ? 'destructive' : 'outline'}
+            >
+                {row.original.item?.status}
+            </Badge>
         ),
     },
     {
         accessorKey: "supplier",
         header: "Supplier",
         cell: ({ row }) => (
-            <div className="capitalize">{row.original.supplierName}</div>
+            <div className="capitalize">{row.original.supplier?.supplierName}</div>
         ),
     },
     {
@@ -135,17 +170,17 @@ export const columns: ColumnDef<product>[] = [
         cell: ({ row }) => {
             // Directly use router.push in the onClick handler
             const HandleView = () => {
-                const productId = row.original._id ?? "";
+                const productId = row.original.item?._id ?? "";
                 useRedirect(productId);
             };
 
             const HandleEdit = () => {
-                const productId = row.original._id ?? "";
+                const productId = row.original.item?._id ?? "";
                 useEdit(productId);
             };
 
             const HandleDelete = () => {
-                const productId = row.original._id ?? "";
+                const productId = row.original.item?._id ?? "";
                 useDelete(productId);
             };
 

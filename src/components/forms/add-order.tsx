@@ -22,7 +22,7 @@ import { orderColumns } from "@tanstack/react-table"
 import { createOrder } from "../../../convex/order"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import MultipleSelector, { Option } from '@/components/ui/multi-select'
-import { useEffect, useState } from "react"
+import { AwaitedReactNode, JSXElementConstructor, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react"
 import {
     MultiSelector,
     MultiSelectorContent,
@@ -43,7 +43,6 @@ const formSchema = z.object({
     items: z.array(z.object({
         productId: z.string().min(2).max(50),
         quantity: z.number().min(1).max(100),
-        price: z.number().min(1).max(100),
     })),
     inputs: z.array(z.object({
         value: z.string().min(2).max(50),
@@ -56,7 +55,7 @@ const AddOrder = () => {
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: { },
+        defaultValues: {},
     })
 
     const { control } = useForm();
@@ -67,15 +66,18 @@ const AddOrder = () => {
         name: "items",
     });
 
-    const getProducts: Option[] = useQuery(api.product.getProducts, {
+    const getProduct = useQuery(api.inventory.getAllInventory, {
         organizationId: organization?.id ?? '',
-    })?.map((item) => ({
-        label: item.productName,
-        value: item._id,
-    })) ?? [];
+    });
+
+    // const inventoryId = getProduct?.item._id;
+
+    // console.log('getProducts', getProducts);
+
     const getCustomers = useQuery(api.customer.getCustomers, {
         organizationId: organization?.id ?? '',
     });
+
     const createOrder = useMutation(api.order.createOrder);
 
     function onSubmit(values: z.infer<typeof formSchema>) {
@@ -85,9 +87,8 @@ const AddOrder = () => {
             customerId: values.customerId as Id<"customer">,
             status: values.status,
             orderItems: values.items.map((item) => ({
-                productId: item.productId as Id<"product">,
+                productId: item.productId as Id<"inventory">,
                 quantity: item.quantity,
-                price: item.price,
             })) ?? [],
         }).then((res) => {
             if (res) {
@@ -128,26 +129,28 @@ const AddOrder = () => {
                             </FormItem>
                         )}
                     />
-                    <div className="flex flex-col items-center justify-center mt-4">
+                    <div className="flex flex-col items-center mt-4">
                         {fields.map((field, index) => (
-                            <div key={field.id} className="space-y-2">
+                            <div key={field.id} className="space-y-2 w-full">
                                 <Label>Product {index + 1}</Label>
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col gap-2 w-full">
                                     <Controller
                                         name={`items.${index}.productId`}
                                         control={form.control}
                                         render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                            >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select product" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {getProducts.map((item) => (
+                                                    {getProduct?.map((item) => (
                                                         <SelectItem
-                                                            key={item.value ?? ''}
-                                                            value={item.value ?? 'test'}
+                                                            key={item.item._id ?? ''}
+                                                            value={item.item._id ?? ''}
                                                         >
-                                                            {item.label}
+                                                            {item.product?.productName}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -172,19 +175,6 @@ const AddOrder = () => {
                                         {form.formState.errors.items?.[index]?.quantity && (
                                             <p className="text-red-500">
                                                 {form.formState.errors.items[index].quantity.message}
-                                            </p>
-                                        )}
-                                        <Input
-                                            type="number"
-                                            step="0.01"
-                                            placeholder="Price"
-                                            {...form.register(`items.${index}.price`, {
-                                                valueAsNumber: true,
-                                            })}
-                                        />
-                                        {form.formState.errors.items?.[index]?.price && (
-                                            <p className="text-red-500">
-                                                {form.formState.errors.items[index].price.message}
                                             </p>
                                         )}
                                         <Button
@@ -239,7 +229,7 @@ const AddOrder = () => {
                     />
                     <Button
                         type="submit"
-                        onClick={()=> console.log('cliked')}
+                        onClick={() => console.log('cliked')}
                     >
                         Submit
                     </Button>

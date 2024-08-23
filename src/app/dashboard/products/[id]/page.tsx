@@ -43,7 +43,7 @@ const Page = ({ params }: { params: { id: string } }) => {
     const details = [
         {
             title: 'Name',
-            value: product?.product.name ?? ''
+            value: product?.product.productName ?? ''
         },
         {
             title: 'Description',
@@ -57,14 +57,10 @@ const Page = ({ params }: { params: { id: string } }) => {
             title: 'Brand',
             value: 'brand'
         },
-        {
-            title: 'Price',
-            value: product?.product.sellingPrice ?? ''
-        },
     ]
 
     const attributes = product?.productProperties?.map((property) => ({
-        title: property?.name ?? '',
+        title: property?.propertyName ?? '',
         value: property?.value ?? '',
     })) ?? [];
 
@@ -72,7 +68,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         <main className="flex flex-col gap-4 px-10">
             <section className='container flex flex-col gap-4'>
                 <header className="flex items-center justify-between">
-                    <h1 className="text-4xl font-bold">Product: {product?.product.name}</h1>
+                    <h1 className="text-4xl font-bold">Product: {product?.product.productName}</h1>
                     <div className="flex gap-4">
                         <Button>
                             <span>

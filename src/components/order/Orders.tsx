@@ -167,7 +167,7 @@ function Orders({ }: Props) {
                                 {orders?.map((order, index) => (
                                     <TableRow key={order._id} className="">
                                         <TableCell>
-                                            <div className="font-medium">{order.customer?.name ?? 'N/A'}</div>
+                                            <div className="font-medium">{order.customer?.customerName ?? 'N/A'}</div>
                                             <div className="hidden text-sm text-muted-foreground md:inline">
                                                 {order.customer?.email ?? 'N/A'}
                                             </div>

@@ -117,7 +117,7 @@ function Dashboard({ }: Props) {
             <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
                     <CardDescription>This Week</CardDescription>
-                    <CardTitle className="text-4xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
+                    <CardTitle className="text-2xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-xs text-muted-foreground">
@@ -131,7 +131,7 @@ function Dashboard({ }: Props) {
             <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
                     <CardDescription>This Month</CardDescription>
-                    <CardTitle className="text-4xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
+                    <CardTitle className="text-2xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-xs text-muted-foreground">

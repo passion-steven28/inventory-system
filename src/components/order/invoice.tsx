@@ -75,9 +75,9 @@ function Invoice({ }: Props) {
                         {lastOrder?.products.map((product, index) => (
                             <li className="flex items-center justify-between" key={index}>
                                 <span className="text-muted-foreground">
-                                    {product?.name} x <span>{product?.quantity}</span>
+                                    {product?.productName}
                                 </span>
-                                <span>$ {product?.sellingPrice}</span>
+                                {/* <span>$ {product?.sellingPrice}</span> */}
                             </li>
                         ))}
                     </ul>
@@ -124,7 +124,7 @@ function Invoice({ }: Props) {
                     <dl className="grid gap-3">
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Customer</dt>
-                            <dd>{lastOrder?.customer?.name}</dd>
+                            <dd>{lastOrder?.customer?.customerName}</dd>
                         </div>
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Email</dt>

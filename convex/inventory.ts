@@ -86,7 +86,6 @@ export const getInventoryBySupplier = query({
 export const getInventoryByProduct = query({
     args: {
         productId: v.id('product'),
-        organizationId: v.string(),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
@@ -94,12 +93,13 @@ export const getInventoryByProduct = query({
             throw new Error("Not authorized");
         }
 
-        const inventory = await ctx.db.query('inventory')
-            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
-            .filter((q) => q.eq(q.field('productId'), args.productId))
-            .collect();
+        if (args.productId) { 
+            const inventory = await ctx.db.query('inventory')
+                .withIndex('byProductId', (q) => q.eq('productId', args.productId))
+                .first()
+                return inventory;
+        }
 
-        return inventory;
     },
 });
 
@@ -117,6 +117,8 @@ export const getAllInventory = query({
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .collect();
         
+        // console.log('inventory', inventory);
+
         if (inventory) {
             let inventoryDetails = [];
 
@@ -124,29 +126,23 @@ export const getAllInventory = query({
                 const productItems = await ctx.db.query('product')
                     .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
                     .filter((q) => q.eq(q.field('_id'), item.productId))
-                    .collect();
-                
+                    .first();
+
                 const supplierItems = await ctx.db.query('supplier')
                     .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
                     .filter((q) => q.eq(q.field('_id'), item.supplierId))
-                    .collect();
+                    .first();
                 
-                // Assuming there's only one product and supplier per inventory item
-                const product = productItems[0];
-                const supplier = supplierItems[0];
-
-                // Create a new object for this inventory item that includes product and supplier details
-                const inventoryDetail = {
-                    ...item, // Spread the original inventory item properties
-                    ...product, // Add the product detail
-                    ...supplier, // Add the supplier detail
+                let inventoryDetail = {
+                    item,
+                    product: productItems,
+                    supplier: supplierItems,
                 };
 
                 inventoryDetails.push(inventoryDetail);
-                console.log(inventoryDetails);
             }
-
-            return { products: inventoryDetails};
+            console.log('inventoryDetails', inventoryDetails);
+            return inventoryDetails;
         }
     }
 });

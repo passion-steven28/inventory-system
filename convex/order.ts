@@ -1,4 +1,3 @@
-import { product } from './../src/app/dashboard/products/columns';
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from './_generated/dataModel';
@@ -16,9 +15,8 @@ export const createOrder = mutation({
         status: v.string(),
         orderItems: v.array(
             v.object({
-                productId: v.id('product'),
+                productId: v.id('inventory'),
                 quantity: v.number(),
-                price: v.number(),
             })
         ),
     },
@@ -28,8 +26,20 @@ export const createOrder = mutation({
             throw new Error("Not authorized");
         }
 
-        // Calculate total price
-        const totalPrice = args.orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        // Fetch all necessary product prices before the loop
+        let productPrices = [];
+        for (const item of args.orderItems) {
+            const product = await ctx.db.get(item.productId);
+            if (product) {
+                productPrices.push(product.sellingPrice);
+            }
+        }
+
+        // calculate totalPrice
+        if (productPrices) {
+            productPrices = productPrices.filter(price => price !== undefined);
+        }
+        const totalPrice = productPrices.reduce((acc, price) => acc + price, 0);
 
         // Insert the order
         const orderId = await ctx.db.insert("order", {
@@ -40,25 +50,18 @@ export const createOrder = mutation({
             orderDate: new Date().toISOString(),
         });
 
-        // Insert order items
+        // Then, in your loop, use the pre-fetched prices
         for (const item of args.orderItems) {
             await ctx.db.insert("orderItem", {
                 orderId,
                 productId: item.productId,
                 quantity: item.quantity,
-                price: item.price,
                 organizationId: args.organizationId,
             });
-
-            // update product quantity
-            // await ctx.db.patch("product", {
-            //     _id: item.productId,
-            //     quantity: product.quantity - item.quantity,
-            // });
         }
 
-        return { orderId };
-    }
+        return orderId;
+    },
 });
 
 export const getOrders = query({
@@ -95,7 +98,7 @@ export const getOrdersTotalPrice = query({
             .order('desc')
             .collect();
 
-        return orders.reduce((acc, order) => acc + order.totalPrice, 0);
+        return orders
     }
 });
 
@@ -133,16 +136,20 @@ export const getLastOrders = query({
 
             console.log('orderItemProducts', orderItemProducts.filter(item => item.quantity))
 
-            const productsQuantity = orderItemProducts.reduce((acc, item) => acc + item.quantity, 0);
-            const productsPrice = orderItemProducts.reduce((acc, item) => acc + item.price * item.quantity, 0);
+            // const productsQuantity = orderItemProducts.reduce((acc, item) => acc + item.quantity, 0);
+            // const productsPrice = orderItemProducts.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
             let products = [];
 
             for (const orderItem of orderItemProducts) {
-                const product = await ctx.db.query('product')
+                const inventorProduct = await ctx.db.query('inventory')
                     .filter((q) => q.eq(q.field('_id'), orderItem.productId))
                     .first();
-                products.push(product);
+                
+                if (inventorProduct) {
+                    const product = await ctx.db.get(inventorProduct.productId);
+                    products.push(product);
+                }
             }
 
             // console.log('products', products);
@@ -153,7 +160,7 @@ export const getLastOrders = query({
 
             // console.log('customer', customer);
 
-            return { orders, orderItems, products, customer };
+            return { orders, products,  customer };
         } else {
             // Handle the case where no order was found
             console.log('No order found');

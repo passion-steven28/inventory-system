@@ -51,7 +51,7 @@ export default function AddProductCategory() {
         try {
             if (c) {
                 const newCategory = await createCategory({
-                    name: c,
+                    categoryName: c,
                     organizationId: organization?.id ?? '',
                 });
                 toast("Category has been created.");
@@ -59,7 +59,7 @@ export default function AddProductCategory() {
             }
             if (s) {
                 const newSubCategory = await createSubCategory({
-                    name: s,
+                    subCategoryName: s,
                     organizationId: organization?.id ?? '',
                     categoryId: ""
                 });
@@ -110,7 +110,7 @@ export default function AddProductCategory() {
                                 {data?.map((item) => (
                                     <SelectItem 
                                     key={item._id} 
-                                    value={item.name}>{item.name}</SelectItem>
+                                    value={item.categoryName}>{item.categoryName}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -123,7 +123,7 @@ export default function AddProductCategory() {
                             </SelectTrigger>
                             <SelectContent>
                                 {subcategory?.map((item) => (
-                                    <SelectItem key={item._id} value={item.name}>{item.name}</SelectItem>
+                                    <SelectItem key={item._id} value={item.subCategoryName}>{item.subCategoryName}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

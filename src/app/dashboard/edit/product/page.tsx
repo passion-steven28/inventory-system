@@ -16,10 +16,10 @@ const Page = () => {
     const { organization } = useOrganization();
     const { user } = useUser();
     const create = useMutation(api.product.createProduct);
-    const data = useQuery(api.inventory.getOrgTotalInventory, {
-        organizationId: organization?.id ?? '',
-    })
-    console.log(data?.totalQuantity);
+    // const data = useQuery(api.inventory.getOrgTotalInventory, {
+    //     organizationId: organization?.id ?? '',
+    // })
+    // console.log(data?.totalQuantity);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -50,21 +50,20 @@ const Page = () => {
 
         if (!organization || !user) return;
 
-        create({
-            name,
-            description,
-            buyingPrice,
-            sellingPrice,
-            imageUrl: 'imageUrl',
-            quantity,
-            minStockThreshold,
-            status,
-            category,
-            subCategory,
-            organizationId: organization.id,
-        }).then((res) => {
-            console.log(res);
-        })
+        // create({
+        //     description,
+        //     buyingPrice,
+        //     sellingPrice,
+        //     imageUrl: 'imageUrl',
+        //     quantity,
+        //     minStockThreshold,
+        //     status,
+        //     category,
+        //     subCategory,
+        //     organizationId: organization.id,
+        // }).then((res) => {
+        //     console.log(res);
+        // })
     }
 
     return (

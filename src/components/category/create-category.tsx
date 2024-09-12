@@ -28,7 +28,7 @@ const CreateCategoryComp = () => {
         try {
             if (c) {
                 const newCategory = await createCategory({
-                    name: c,
+                    categoryName: c,
                     organizationId: organization?.id ?? '',
                 });
                 toast("Category has been created.");
@@ -36,7 +36,7 @@ const CreateCategoryComp = () => {
             }
             if (s) {
                 const newSubCategory = await createSubCategory({
-                    name: s,
+                    subCategoryName: s,
                     organizationId: organization?.id ?? '',
                     categoryId: ""
                 });

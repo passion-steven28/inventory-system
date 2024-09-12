@@ -50,6 +50,21 @@ export const createOrder = mutation({
             orderDate: new Date().toISOString(),
         });
 
+        // Update the inventory analysis
+        const analyticsId = await ctx.db.query('analytics')
+            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
+            .first();
+        
+        if (analyticsId) {
+            const revenue = totalPrice * args.orderItems.length;
+            const profit = revenue - totalPrice;
+            console.log('revenue', revenue, args.orderItems.length);
+            await ctx.db.patch(analyticsId._id, {
+                totalSales: analyticsId.totalSales + totalPrice,
+                totalRevenue: analyticsId.totalRevenue + totalPrice * args.orderItems.length,
+            });
+        }
+
         // Then, in your loop, use the pre-fetched prices
         for (const item of args.orderItems) {
             await ctx.db.insert("orderItem", {
@@ -59,7 +74,6 @@ export const createOrder = mutation({
                 organizationId: args.organizationId,
             });
         }
-
         return orderId;
     },
 });

@@ -97,8 +97,8 @@ export default defineSchema({
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
         .index("byEmail", ["email"]),
-    
-    
+
+
     customer: defineTable({
         customerName: v.string(),
         email: v.optional(v.string()),
@@ -109,7 +109,7 @@ export default defineSchema({
     }).index("byOrganizationId", ["organizationId"])
         .index("byEmail", ["email"]),
 
-    
+
     order: defineTable({
         customerId: v.id('customer'), // many to many
         organizationId: v.string(), // many to one
@@ -118,8 +118,8 @@ export default defineSchema({
         orderDate: v.string(), // or v.number() if you're using timestamps
     }).index("byOrganizationId", ["organizationId"])
         .index("byCustomerId", ["customerId"]),
-    
-    
+
+
     orderItem: defineTable({
         orderId: v.id('order'), // many to one
         productId: v.id('inventory'), // many to many
@@ -128,8 +128,8 @@ export default defineSchema({
     }).index("byOrganizationId", ["organizationId"])
         .index("byOrderId", ["orderId"])
         .index("byProductId", ["productId"]),
-    
-    
+
+
     inventory: defineTable({
         organizationId: v.string(),
         productId: v.id('product'),
@@ -162,14 +162,41 @@ export default defineSchema({
 
 
     inventoryTransaction: defineTable({
-        productId: v.string(),
         inventoryId: v.string(),
         quantity: v.number(),
+        price: v.number(),
         type: v.string(),
         organizationId: v.string(),
         lastUpdated: v.optional(v.number()),
     })
-        .index("byProductId", ["productId"])
         .index("byOrganizationId", ["organizationId"])
-        .index("byInventoryId", ["inventoryId"]),
+        .index("byInventoryId", ["inventoryId"])
+        .index("byType", ["type"]),
+
+    analytics: defineTable({
+        organizationId: v.string(),
+        totalSales: v.number(),
+        totalExpenses: v.number(),
+        totalRevenue: v.number(),
+        totalProfit: v.number(),
+        totalCost: v.number(),
+    })
+        .index("byOrganizationId", ["organizationId"]),
+
+    expenses: defineTable({
+        organizationId: v.string(),
+        type: v.id('expense_type'),
+        amount: v.number(),
+        description: v.optional(v.string()),
+        createdAt: v.optional(v.number()),
+    })
+        .index("byOrganizationId", ["organizationId"]),
+
+    expense_type: defineTable({
+        organizationId: v.string(),
+        type: v.string(),
+        description: v.string(),
+    })
+        .index("byOrganizationId", ["organizationId"])
+        .index("byType", ["type"]),
 })

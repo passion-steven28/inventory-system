@@ -91,7 +91,7 @@ export const columns: ColumnDef<product>[] = [
         },
     },
     {
-        accessorKey: "productName",
+        accessorKey: "product.productName",
         header: ({ column }) => {
             return (
                 <Button
@@ -102,10 +102,7 @@ export const columns: ColumnDef<product>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
-        },
-        cell: ({ row }) => {
-            return <div className="text-center font-medium">{row.original?.product?.productName || 'N/A'}</div>
-        },
+        }
     },
     {
         accessorKey: "buying price",
@@ -134,7 +131,6 @@ export const columns: ColumnDef<product>[] = [
         accessorKey: "category",
         header: () => <div className="text-right">Category</div>,
         cell: ({ row }) => {
-
             return <div className="text-right font-medium">{row.original.product?.category}</div>
         },
     },

@@ -37,6 +37,31 @@ export const createInventory = mutation({
             organizationId: args.organizationId,
             createdAt: Number(new Date()),
             lastUpdated: Number(new Date()),
+        }).then(async (inventoryId) => {
+            // Update the inventory transactions
+            await ctx.db.insert("inventoryTransaction", {
+                inventoryId,
+                type: "purchase",
+                quantity: args.openStock,
+                price: args.buyingPrice || 0,
+                organizationId: args.organizationId,
+                lastUpdated: Number(new Date()),
+            });
+
+            // Update the inventory analysis
+            const analyticsId = await ctx.db.query('analytics')
+                .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
+                .first();
+
+            console.log('analyticsId', analyticsId);
+
+            if (analyticsId) {
+                console.log('patching analytics');
+                
+                await ctx.db.patch(analyticsId._id, {
+                    totalCost: analyticsId.totalCost + (args.buyingPrice || 0) * args.openStock,
+                });
+            }
         });
 
         return inventoryId;
@@ -93,11 +118,11 @@ export const getInventoryByProduct = query({
             throw new Error("Not authorized");
         }
 
-        if (args.productId) { 
+        if (args.productId) {
             const inventory = await ctx.db.query('inventory')
                 .withIndex('byProductId', (q) => q.eq('productId', args.productId))
                 .first()
-                return inventory;
+            return inventory;
         }
 
     },
@@ -116,7 +141,7 @@ export const getAllInventory = query({
         const inventory = await ctx.db.query('inventory')
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .collect();
-        
+
         // console.log('inventory', inventory);
 
         if (inventory) {
@@ -132,7 +157,7 @@ export const getAllInventory = query({
                     .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
                     .filter((q) => q.eq(q.field('_id'), item.supplierId))
                     .first();
-                
+
                 let inventoryDetail = {
                     item,
                     product: productItems,

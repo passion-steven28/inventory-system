@@ -1,37 +1,6 @@
 'use client'
 
-import React from 'react'
-import Image from "next/image"
-import Link from "next/link"
-import {
-    ChevronLeft,
-    ChevronRight,
-    Copy,
-    CreditCard,
-    File,
-    Home,
-    LineChart,
-    ListFilter,
-    MoreVertical,
-    Package,
-    Package2,
-    PanelLeft,
-    Search,
-    Settings,
-    ShoppingCart,
-    Truck,
-    Users2,
-} from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import React, { useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -41,56 +10,38 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-} from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import AddOrder from '../forms/add-order'
 import { useOrganization } from '@clerk/nextjs'
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import useShortNumber from '@/hooks/shortNumbers'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { PlusIcon } from 'lucide-react'
+import AddCustomer from '../forms/add-customer'
 
 type Props = {}
 
-function Dashboard({ }: Props) {
+function Dashboard({}: Props) {
     const { organization } = useOrganization()
+    const { formattedNumber, shortenNumber } = useShortNumber();
     const totalPriceInLast7Days = useQuery(api.order.getOrdersInSpecDuration, {
         organizationId: organization?.id ?? '',
         duration: 'last7days',
     })
+
+    useEffect(() => {
+        shortenNumber(totalPriceInLast7Days?.reduce((acc, order) => acc + (order.totalPrice ?? 0), 0) ?? 0)
+    }, [shortenNumber, totalPriceInLast7Days]);
     return (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
             <Card
@@ -109,6 +60,19 @@ function Dashboard({ }: Props) {
                             <Button>Create New Order</Button>
                         </SheetTrigger>
                         <SheetContent>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                        customer <PlusIcon className="h-5 w-5" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add Customer</DialogTitle>
+                                        <AddCustomer />
+                                    </DialogHeader>
+                                </DialogContent>
+                            </Dialog>
                             <AddOrder />
                         </SheetContent>
                     </Sheet>
@@ -117,7 +81,7 @@ function Dashboard({ }: Props) {
             <Card x-chunk="dashboard-05-chunk-1">
                 <CardHeader className="pb-2">
                     <CardDescription>This Week</CardDescription>
-                    <CardTitle className="text-2xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
+                    <CardTitle className="text-2xl">{formattedNumber} TZS</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-xs text-muted-foreground">
@@ -131,7 +95,7 @@ function Dashboard({ }: Props) {
             <Card x-chunk="dashboard-05-chunk-2">
                 <CardHeader className="pb-2">
                     <CardDescription>This Month</CardDescription>
-                    <CardTitle className="text-2xl">${totalPriceInLast7Days?.reduce((acc, order) => acc + order.totalPrice, 0)}</CardTitle>
+                    <CardTitle className="text-2xl">{formattedNumber} TZS</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-xs text-muted-foreground">
@@ -145,5 +109,4 @@ function Dashboard({ }: Props) {
         </div>
     )
 }
-
 export default Dashboard

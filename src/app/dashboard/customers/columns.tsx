@@ -21,7 +21,7 @@ import { useDeleteProduct } from "@/lib/hooks"
 export type customer = {
     _id?: string
     _creationTime?: number
-    name?: string
+    customerName?: string
     email?: string
     phone?: string
     address?: string
@@ -56,14 +56,14 @@ export const columns: ColumnDef<customer>[] = [
     },
     {
         accessorKey: "id",
-        header: () => <div className="text-right">Id</div>,
+        header: () => <div className="text-left">Id</div>,
         cell: ({ row }) => {
 
-            return <div className="text-right font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
+            return <div className="text-left font-medium">{`${row.original._id?.slice(0, 5)}...`}</div>
         },
     },
     {
-        accessorKey: "name",
+        accessorKey: "customerName",
         header: ({ column }) => {
             return (
                 <Button
@@ -78,25 +78,25 @@ export const columns: ColumnDef<customer>[] = [
     },
     {
         accessorKey: "email",
-        header: () => <div className="text-right">Email</div>,
+        header: () => <div className="text-left">Email</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("email")}</div>
+            return <div className="text-left font-medium">{row.getValue("email")}</div>
         },
     },
     {
         accessorKey: "phone",
-        header: () => <div className="text-right">Phone</div>,
+        header: () => <div className="text-left">Phone</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("phone")}</div>
+            return <div className="text-left font-medium">{row.getValue("phone")}</div>
         },
     },
-    {
-        accessorKey: "address",
-        header: () => <div className="text-right">Address</div>,
-        cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("address")}</div>
-        },
-    },
+    // {
+    //     accessorKey: "address",
+    //     header: () => <div className="text-left">Address</div>,
+    //     cell: ({ row }) => {
+    //         return <div className="text-left font-medium">{row.getValue("address")}</div>
+    //     },
+    // },
     {
         id: "actions",
         header: "Actions",

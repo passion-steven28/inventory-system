@@ -28,6 +28,16 @@ export const createOrganization = internalMutation({
         await ctx.db.insert("organization", {
             clerkOrgId: args.clerkOrgId,
             name: args.name,
+        }).then((organizationId) => {
+            // create analytics table
+            ctx.db.insert("analytics", {
+                organizationId: args.clerkOrgId,
+                totalSales: 0,
+                totalExpenses: 0,
+                totalRevenue: 0,
+                totalProfit: 0,
+                totalCost: 0,
+            })
         });
     },
 });

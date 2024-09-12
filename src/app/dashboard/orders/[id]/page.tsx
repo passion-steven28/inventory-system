@@ -89,7 +89,6 @@ const page = ({ params }: { params: { id: string } }) => {
                         <ProductStockDetails
                             src="/images/ipad.jpg"
                             alt="Product stock details"
-                            items={stockDetails}
                         />
                     </div>
                 </div>

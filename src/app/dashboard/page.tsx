@@ -1,3 +1,4 @@
+'use client'
 import { SalesChart } from "@/components/chart/SalesChart";
 import { ChartComp } from "@/components/ChartComp";
 import CreateOrganization from "@/components/organization/CreateOrganization";
@@ -13,13 +14,72 @@ import Grids from "@/components/reusable/Grids";
 import LinkTableWrapper from "@/components/table/LinkTableWrapper";
 import { LowQuantityTable } from "@/components/table/LowQuantityTable";
 import { TopSellingTable } from "@/components/table/TopSellingTable";
-import { useAuth, useOrganization, useOrganizationList } from "@clerk/nextjs";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { DollarSign, DollarSignIcon, Link } from "lucide-react";
+import { useQuery } from "convex/react"
+import { api } from "../../../convex/_generated/api"
+import { useOrganization } from "@clerk/nextjs"
+import useShortNumber from "@/hooks/shortNumbers";
+import { useEffect } from "react";
 
 
 
-export default async function Home() {
+export default function Home() {
+  const { formattedNumber, shortenNumber } = useShortNumber();
+  const { organization } = useOrganization()
+  const financialMetrics = useQuery(api.inventoryTransaction.calculateFinancialMetrics, {
+    organizationId: organization?.id ?? '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+  })
+
+  const salesData = [
+    {
+      title: "Total Revenue",
+      icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'Tsh',
+      }).format(financialMetrics?.revenue ?? 0),
+      change: "+20.1% from last month",
+    },
+    {
+      title: "Total Sales",
+      icon: <DollarSignIcon className="h-4 w-4 text-muted-foreground" />,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'Tsh',
+      }).format(financialMetrics?.profit ?? 0),
+      change: "+20.1% from last month",
+    },
+    {
+      title: "Total cost",
+      icon: <DollarSignIcon className="h-4 w-4 text-muted-foreground" />,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'Tsh',
+      }).format(financialMetrics?.cost ?? 0),
+      change: "+20.1% from last month",
+    },
+    {
+      title: "Total expenses",
+      icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'Tsh',
+      }).format(financialMetrics?.totalExpenses ?? 0),
+      change: "+20.1% from last month",
+    },
+    {
+      title: "Net Profit",
+      icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
+      value: new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'Tsh',
+      }).format(financialMetrics?.netProfit ?? 0),
+      change: "+20.1% from last month",
+    },
+  ];
 
   return (
     <main className="grid place-content-center w-full grid-cols-1 md:grid-cols-12 gap-4 px-2">
@@ -66,32 +126,7 @@ export default async function Home() {
   );
 }
 
-const salesData = [
-  {
-    title: "Total Revenue",
-    icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
-    value: "$45.89",
-    change: "+20.1% from last month",
-  },
-  {
-    title: "Total Sales",
-    icon: <DollarSignIcon className="h-4 w-4 text-muted-foreground" />,
-    value: "$45.1",
-    change: "+20.1% from last month",
-  },
-  {
-    title: "Total Profit",
-    icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
-    value: "$45,231.89",
-    change: "+20.1% from last month",
-  },
-  {
-    title: "Total Cost",
-    icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
-    value: "$45,231.89",
-    change: "+20.1% from last month",
-  },
-];
+
 
 const InventoryData = [
   {

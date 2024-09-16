@@ -89,6 +89,14 @@ function Orders({ }: Props) {
     const orders = useQuery(api.order.getOrdersWithCustomer, {
         organizationId: organization?.id ?? '',
     })
+    const financialMetrics = useQuery(api.inventoryTransaction.calculateFinancialMetrics, {
+        organizationId: organization?.id ?? '',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date().toISOString().split('T')[0],
+    })
+    
+    console.log('financialMetrics', financialMetrics);
+    
     if (!orders){
         return <div>No orders found</div>
     }

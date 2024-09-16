@@ -73,7 +73,19 @@ export const createOrder = mutation({
                 quantity: item.quantity,
                 organizationId: args.organizationId,
             });
+
+            // update the inventory current stock
+            const inventory = await ctx.db.query('inventory')
+                .filter((q) => q.eq(q.field('_id'), item.productId))
+                .first();
+
+            if (inventory?.currentStock) {
+                await ctx.db.patch(inventory._id, {
+                    currentStock: inventory.currentStock - item.quantity,
+                });
+            }
         }
+
         return orderId;
     },
 });

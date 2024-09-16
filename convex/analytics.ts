@@ -28,6 +28,8 @@ export const getAnalyticsTotalNetProfit = query({
         const analytics = await ctx.db.query('analytics')
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .first();
+        
+        console.log(analytics);
 
         if (analytics) {
             const grossProfit = analytics.totalRevenue - analytics.totalCost;
@@ -37,7 +39,9 @@ export const getAnalyticsTotalNetProfit = query({
             return 0;
         }
     },
-});export const getAnalyticsTotalRevenue = query({
+});
+
+export const getAnalyticsTotalRevenue = query({
     args: {
         organizationId: v.string(),
     },

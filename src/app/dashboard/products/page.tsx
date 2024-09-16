@@ -58,6 +58,11 @@ const Page = () => {
     const getAllSubCategories = useQuery(api.subCategory.getTotalSubCategories, {
         organizationId: organization?.id ?? '',
     })
+    const getNetProfit = useQuery(api.analytics.getAnalyticsTotalNetProfit, {
+        organizationId: organization?.id ?? '',
+    })
+
+    console.log(getNetProfit);
     
 
     if (isLoading) {

@@ -26,7 +26,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 const chartData = [
-    { date: "2024-04-01", desktop: 222, mobile: 150 },
+    { date: "2024-01-01", desktop: 222, mobile: 150 },
     { date: "2024-04-02", desktop: 97, mobile: 180 },
     { date: "2024-04-03", desktop: 167, mobile: 120 },
     { date: "2024-04-04", desktop: 242, mobile: 260 },
@@ -114,9 +114,9 @@ const chartData = [
     { date: "2024-06-25", desktop: 141, mobile: 190 },
     { date: "2024-06-26", desktop: 434, mobile: 380 },
     { date: "2024-06-27", desktop: 448, mobile: 490 },
-    { date: "2024-06-28", desktop: 149, mobile: 200 },
-    { date: "2024-06-29", desktop: 103, mobile: 160 },
-    { date: "2024-06-30", desktop: 446, mobile: 400 },
+    { date: "2024-09-28", desktop: 149, mobile: 200 },
+    { date: "2024-09-29", desktop: 103, mobile: 160 },
+    { date: "2024-09-30", desktop: 446, mobile: 400 },
 ]
 
 const chartConfig = {

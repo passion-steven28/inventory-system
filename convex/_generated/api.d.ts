@@ -23,6 +23,7 @@ import type * as expenses from "../expenses.js";
 import type * as Financial from "../Financial.js";
 import type * as http from "../http.js";
 import type * as inventory from "../inventory.js";
+import type * as inventoryTransaction from "../inventoryTransaction.js";
 import type * as order from "../order.js";
 import type * as orderItem from "../orderItem.js";
 import type * as organization from "../organization.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   Financial: typeof Financial;
   http: typeof http;
   inventory: typeof inventory;
+  inventoryTransaction: typeof inventoryTransaction;
   order: typeof order;
   orderItem: typeof orderItem;
   organization: typeof organization;

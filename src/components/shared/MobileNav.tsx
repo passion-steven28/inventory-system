@@ -1,14 +1,22 @@
 import Link from "next/link"
 import {
+    AreaChart,
     CircleUser,
     Home,
     LineChart,
     Menu,
     Package,
     Package2,
+    Package2Icon,
     Search,
+    ShoppingBag,
     ShoppingCart,
     Users,
+    UsersIcon,
+    Truck,
+    Shirt,
+    Plus,
+    Eye
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -20,19 +28,77 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Logo from "../ui/logo"
 import { OrganizationList, OrganizationProfile, OrganizationSwitcher, UserButton } from "@clerk/nextjs"
 import { Organization, OrganizationMembership } from "@clerk/backend"
+const navLinks = [
+    {
+        name: "Dashboard",
+        href: "/dashboard",
+        icon: <Home className="h-4 w-4" />,
+    },
+    {
+        name: "Orders",
+        href: "/dashboard/orders",
+        icon: <ShoppingCart className="h-4 w-4" />,
+        childLinks: [
+            {
+                name: "create",
+                href: "/dashboard/orders/create",
+                icon: <Plus className="h-4 w-4" />,
+            },
+            {
+                name: "view",
+                href: "/dashboard/orders/view",
+                icon: <Eye className="h-4 w-4" />,
+            }
+        ]
+    },
+    {
+        name: "Inventory",
+        href: "/dashboard/inventory",
+        icon: <Package className="h-4 w-4" />,
+        childLinks: [
+            {
+                name: "create",
+                href: "/dashboard/products/create",
+                icon: <Plus className="h-4 w-4" />,
+            },
+            {
+                name: "categories",
+                href: "/dashboard/products/categories",
+                icon: <Package2 className="h-4 w-4" />,
+            },
+            {
+                name: "suppliers",
+                href: "/dashboard/products/suppliers",
+                icon: <Users className="h-4 w-4" />,
+            }
+        ]
+    },
+    {
+        name: "Products",
+        href: "/dashboard/products",
+        icon: <Shirt className="h-4 w-4" />,
+    },
+    {
+        name: "Suppliers",
+        href: "/dashboard/suppliers",
+        icon: <Users className="h-4 w-4" />,
+    },
+    {
+        name: "Customers",
+        href: "/dashboard/customers",
+        icon: <Users className="h-4 w-4" />,
+    },
+    {
+        name: "Analytics",
+        href: "/dashboard/analytics",
+        icon: <LineChart className="h-4 w-4" />,
+    },
+];
 
 const MobileNav = () => {
     return (
@@ -51,47 +117,21 @@ const MobileNav = () => {
                 <SheetContent side="left" className="flex flex-col">
                     <nav className="grid gap-2 text-lg font-medium">
                         <Logo
-                        src="logo.svg"
-                        alt="logo"
+                            src="logo.svg"
+                            alt="logo"
                         />
-                        <Link
-                            href="#"
-                            className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                        >
-                            <Home className="h-5 w-5" />
-                            Dashboard
-                        </Link>
-                        <Link
-                            href="#"
-                            className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-                        >
-                            <ShoppingCart className="h-5 w-5" />
-                            Orders
-                            <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                                6
-                            </Badge>
-                        </Link>
-                        <Link
-                            href="#"
-                            className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                        >
-                            <Package className="h-5 w-5" />
-                            Products
-                        </Link>
-                        <Link
-                            href="#"
-                            className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                        >
-                            <Users className="h-5 w-5" />
-                            Customers
-                        </Link>
-                        <Link
-                            href="#"
-                            className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                        >
-                            <LineChart className="h-5 w-5" />
-                            Analytics
-                        </Link>
+                        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                                >
+                                    {link.icon}
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </nav>
                     </nav>
                     <div className="mt-auto">
                         <Card>

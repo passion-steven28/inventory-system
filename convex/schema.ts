@@ -1,4 +1,3 @@
-import { product } from './../src/app/dashboard/products/columns';
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -22,8 +21,8 @@ export default defineSchema({
         productName: v.string(),
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
-        category: v.optional(v.string()),
-        subCategory: v.optional(v.string()),
+        category: v.optional(v.id('category')),
+        subCategory: v.optional(v.id('subcategory')),
         userId: v.optional(v.string()),
         organizationId: v.string(),
         brandId: v.optional(v.id('brand')),
@@ -32,8 +31,9 @@ export default defineSchema({
         propertyId: v.optional(v.array(v.id('property'))),
     }).index("byOrganizationId", ["organizationId"])
         .index("userId", ["userId"])
-        .index("categoryId", ["category"])
-        .index("subCategoryId", ["subCategory"])
+        .index("categoryId", ["organizationId", "category"]) // Compound index
+        .index("subCategoryId", ["organizationId", "subCategory"]) // Compound index
+        .index("byName", ["organizationId", "productName"]) // Index for searching by name
     ,
 
     product_metrics: defineTable({
@@ -96,7 +96,8 @@ export default defineSchema({
         imageUrl: v.optional(v.string()),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-        .index("byEmail", ["email"]),
+        .index("byEmail", ["organizationId", "email"]) // Compound index
+        .index("byName", ["organizationId", "supplierName"]), // Index for searching by name
 
 
     customer: defineTable({
@@ -107,7 +108,8 @@ export default defineSchema({
         imageUrl: v.optional(v.string()),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
-        .index("byEmail", ["email"]),
+        .index("byEmail", ["organizationId", "email"]) // Compound index
+        .index("byName", ["organizationId", "customerName"]), // Index for searching by name
 
 
     order: defineTable({
@@ -117,12 +119,14 @@ export default defineSchema({
         totalPrice: v.optional(v.number()), // sum of orderItems.price
         orderDate: v.string(), // or v.number() if you're using timestamps
     }).index("byOrganizationId", ["organizationId"])
-        .index("byCustomerId", ["customerId"]),
+        .index("byCustomerId", ["organizationId", "customerId"]) // Compound index
+        .index("byStatus", ["organizationId", "status"]) // Index for filtering by status
+        .index("byDate", ["organizationId", "orderDate"]), // Index for sorting/filtering by date
 
 
     orderItem: defineTable({
         orderId: v.id('order'), // many to one
-        productId: v.id('inventory'), // many to many
+        productId: v.id('product'), // Reference the actual product
         quantity: v.number(),
         organizationId: v.string(),
     }).index("byOrganizationId", ["organizationId"])
@@ -142,14 +146,14 @@ export default defineSchema({
         currentStock: v.optional(v.number()),
         createdAt: v.optional(v.number()),
         lastUpdated: v.optional(v.number()),
-    }).index("byProductId", ["productId"])
-        .index("bySupplierId", ["supplierId"])
+    }).index("byProductId", ["organizationId", "productId"]) // Compound index
+        .index("bySupplierId", ["organizationId", "supplierId"]) // Compound index
         .index("byOrganizationId", ["organizationId"])
     ,
 
     inventory_adjustment: defineTable({
-        productId: v.string(),
-        inventoryId: v.string(),
+        productId: v.id('product'),
+        inventoryId: v.id('inventory'),
         quantity: v.number(),
         type: v.string(),
         description: v.optional(v.string()),
@@ -162,7 +166,7 @@ export default defineSchema({
 
 
     inventoryTransaction: defineTable({
-        inventoryId: v.string(),
+        inventoryId: v.id('inventory'),
         quantity: v.number(),
         price: v.number(),
         type: v.string(),

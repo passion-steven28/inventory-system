@@ -28,7 +28,7 @@ export const calculateFinancialMetrics = query({
 
         const cost = inventoryTransactions
             .filter((transaction) => transaction.type === "purchase")
-            .reduce((total, transaction) => total + (transaction.quantity * transaction.quantity), 0);
+            .reduce((total, transaction) => total + (transaction.quantity * transaction.price), 0);
 
         // Calculate Profit
         const profit = revenue - cost;

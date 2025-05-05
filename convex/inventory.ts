@@ -120,7 +120,7 @@ export const getInventoryByProduct = query({
 
         if (args.productId) {
             const inventory = await ctx.db.query('inventory')
-                .withIndex('byProductId', (q) => q.eq('productId', args.productId))
+                .filter((q) => q.eq(q.field('productId'), args.productId))
                 .first()
             return inventory;
         }
@@ -138,36 +138,39 @@ export const getAllInventory = query({
             throw new Error("Not authorized");
         }
 
-        const inventory = await ctx.db.query('inventory')
+        // Fetch all inventory items for the organization
+        const inventoryItems = await ctx.db.query('inventory')
             .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
             .collect();
 
-        // console.log('inventory', inventory);
-
-        if (inventory) {
-            let inventoryDetails = [];
-
-            for (const item of inventory) {
-                const productItems = await ctx.db.query('product')
-                    .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
-                    .filter((q) => q.eq(q.field('_id'), item.productId))
-                    .first();
-
-                const supplierItems = await ctx.db.query('supplier')
-                    .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
-                    .filter((q) => q.eq(q.field('_id'), item.supplierId))
-                    .first();
-
-                let inventoryDetail = {
-                    item,
-                    product: productItems,
-                    supplier: supplierItems,
-                };
-
-                inventoryDetails.push(inventoryDetail);
-            }
-            console.log('inventoryDetails', inventoryDetails);
-            return inventoryDetails;
+        if (!inventoryItems || inventoryItems.length === 0) {
+            return []; // Return empty array if no inventory
         }
+
+        // Extract unique product and supplier IDs
+        const productIds = Array.from(new Set(inventoryItems.map(item => item.productId)));
+        const supplierIds = Array.from(new Set(inventoryItems.map(item => item.supplierId)));
+
+        // Fetch all related products and suppliers in batches
+        const products = await Promise.all(
+            productIds.map(id => ctx.db.get(id))
+        );
+        const suppliers = await Promise.all(
+            supplierIds.map(id => ctx.db.get(id))
+        );
+
+        // Create maps for quick lookup
+        const productsMap = new Map(products.filter(p => p !== null).map(p => [p!._id, p]));
+        const suppliersMap = new Map(suppliers.filter(s => s !== null).map(s => [s!._id, s]));
+
+        // Combine inventory items with their product and supplier details
+        const inventoryDetails = inventoryItems.map(item => ({
+            item,
+            product: productsMap.get(item.productId) || null,
+            supplier: suppliersMap.get(item.supplierId) || null,
+        }));
+
+        // console.log('inventoryDetails', inventoryDetails);
+        return inventoryDetails;
     }
 });

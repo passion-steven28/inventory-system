@@ -15,7 +15,7 @@ export const createOrder = mutation({
         status: v.string(),
         orderItems: v.array(
             v.object({
-                productId: v.id('inventory'),
+                productId: v.id('product'), // Changed from inventory ID to product ID
                 quantity: v.number(),
             })
         ),
@@ -26,64 +26,92 @@ export const createOrder = mutation({
             throw new Error("Not authorized");
         }
 
-        // Fetch all necessary product prices before the loop
-        let productPrices = [];
-        for (const item of args.orderItems) {
-            const product = await ctx.db.get(item.productId);
-            if (product) {
-                productPrices.push(product.sellingPrice);
-            }
-        }
+        let calculatedTotalPrice = 0;
+        const inventoryUpdates: { inventoryId: Id<'inventory'>, quantityChange: number }[] = [];
+        const orderItemInserts: any[] = []; // Store args for orderItem inserts
 
-        // calculate totalPrice
-        if (productPrices) {
-            productPrices = productPrices.filter(price => price !== undefined);
+        // Process items to find inventory, calculate price, and prepare updates
+        for (const item of args.orderItems) {
+            // Find the corresponding inventory item for the product
+            // Assuming one active inventory record per product for simplicity
+            const inventoryItem = await ctx.db
+                .query('inventory')
+                .filter(q => q.eq(q.field('productId'), item.productId))
+                .filter(q => q.eq(q.field('organizationId'), args.organizationId))
+                // Add more filters if needed (e.g., status = 'active')
+                .first();
+
+            if (!inventoryItem) {
+                throw new Error(`Inventory not found for product ID: ${item.productId}`);
+            }
+            if (inventoryItem.currentStock === undefined || inventoryItem.currentStock === null || inventoryItem.currentStock < item.quantity) {
+                throw new Error(`Insufficient stock for product ID: ${item.productId}. Available: ${inventoryItem.currentStock ?? 0}, Required: ${item.quantity}`);
+            }
+            if (inventoryItem.sellingPrice === undefined || inventoryItem.sellingPrice === null) {
+                throw new Error(`Selling price not set for inventory of product ID: ${item.productId}`);
+            }
+
+            calculatedTotalPrice += item.quantity * inventoryItem.sellingPrice;
+            inventoryUpdates.push({ inventoryId: inventoryItem._id, quantityChange: -item.quantity });
+            orderItemInserts.push({
+                // orderId will be set after order insertion
+                productId: item.productId, // Store product ID in orderItem
+                quantity: item.quantity,
+                organizationId: args.organizationId,
+                // Optionally store price per item at time of order
+                pricePerItem: inventoryItem.sellingPrice 
+            });
         }
-        const totalPrice = productPrices.reduce((acc, price) => acc + price, 0);
 
         // Insert the order
         const orderId = await ctx.db.insert("order", {
             customerId: args.customerId,
             organizationId: args.organizationId,
             status: args.status,
-            totalPrice,
+            totalPrice: calculatedTotalPrice, // Use correctly calculated total price
             orderDate: new Date().toISOString(),
         });
 
-        // Update the inventory analysis
-        const analyticsId = await ctx.db.query('analytics')
-            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
-            .first();
-        
-        if (analyticsId) {
-            const revenue = totalPrice * args.orderItems.length;
-            const profit = revenue - totalPrice;
-            console.log('revenue', revenue, args.orderItems.length);
-            await ctx.db.patch(analyticsId._id, {
-                totalSales: analyticsId.totalSales + totalPrice,
-                totalRevenue: analyticsId.totalRevenue + totalPrice * args.orderItems.length,
+        // Insert order items
+        for (const orderItemArg of orderItemInserts) {
+            await ctx.db.insert("orderItem", {
+                ...orderItemArg,
+                orderId: orderId, // Set the orderId now
             });
         }
 
-        // Then, in your loop, use the pre-fetched prices
-        for (const item of args.orderItems) {
-            await ctx.db.insert("orderItem", {
-                orderId,
-                productId: item.productId,
-                quantity: item.quantity,
-                organizationId: args.organizationId,
-            });
-
-            // update the inventory current stock
-            const inventory = await ctx.db.query('inventory')
-                .filter((q) => q.eq(q.field('_id'), item.productId))
-                .first();
-
-            if (inventory?.currentStock) {
-                await ctx.db.patch(inventory._id, {
-                    currentStock: inventory.currentStock - item.quantity,
+        // Update inventory stock
+        for (const update of inventoryUpdates) {
+            const currentInventory = await ctx.db.get(update.inventoryId);
+            if (currentInventory && currentInventory.currentStock !== undefined && currentInventory.currentStock !== null) {
+                await ctx.db.patch(update.inventoryId, {
+                    currentStock: currentInventory.currentStock + update.quantityChange,
+                    lastUpdated: Date.now()
                 });
             }
+        }
+
+        // Update analytics
+        const analyticsRecord = await ctx.db.query('analytics')
+            .withIndex('byOrganizationId', (q) => q.eq('organizationId', args.organizationId))
+            .first();
+        
+        if (analyticsRecord) {
+            await ctx.db.patch(analyticsRecord._id, {
+                totalSales: (analyticsRecord.totalSales ?? 0) + 1, // Increment sales count
+                totalRevenue: (analyticsRecord.totalRevenue ?? 0) + calculatedTotalPrice, // Add revenue
+                // Note: Profit calculation is complex and better handled separately or via scheduled tasks
+            });
+        } else {
+             // Optionally create analytics record if it doesn't exist
+             await ctx.db.insert('analytics', {
+                organizationId: args.organizationId,
+                totalSales: 1,
+                totalRevenue: calculatedTotalPrice,
+                totalExpenses: 0,
+                totalCost: 0,
+                totalProfit: 0, // Initialize profit
+             });
         }
 
         return orderId;
@@ -169,7 +197,7 @@ export const getLastOrders = query({
 
             for (const orderItem of orderItemProducts) {
                 const inventorProduct = await ctx.db.query('inventory')
-                    .filter((q) => q.eq(q.field('_id'), orderItem.productId))
+                    .filter(q => q.eq(q.field('productId'), orderItem.productId))
                     .first();
                 
                 if (inventorProduct) {

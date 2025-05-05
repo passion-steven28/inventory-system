@@ -7,8 +7,8 @@ export const createProduct = mutation({
         productName: v.string(),
         description: v.optional(v.string()),
         imageUrl: v.optional(v.string()),
-        category: v.optional(v.string()),
-        subCategory: v.optional(v.string()),
+        category: v.optional(v.id('category')), // Expect ID type
+        subCategory: v.optional(v.id('subcategory')), // Expect ID type
         brand: v.optional(v.id('brand')),
         properties: v.optional(v.array(v.object({
             propertyName: v.string(),
@@ -41,8 +41,8 @@ export const createProduct = mutation({
         const productId = await ctx.db.insert("product", {
             productName: args.productName,
             description: args.description,
-            category: args.category,
-            subCategory: args.subCategory,
+            category: args.category, // Remove type assertion
+            subCategory: args.subCategory, // Remove type assertion
             brandId: args.brand,
             organizationId: args.organizationId,
             propertyId: productIds,
@@ -86,13 +86,15 @@ export const getProduct = query({
             .filter((q) => q.eq(q.field('_id'), args.id))
             .unique()
         
-            
-        if (products) { 
-            const productPropertiesId = products?.propertyId as unknown as Id<'property'>[];
-            let productProperties = [];
-            for (const propertyId of productPropertiesId) { 
-                const property = await ctx.db.get(propertyId);
-                productProperties.push(property);
+        if (products) {
+            let productProperties: any[] = [];
+            if (products.propertyId && products.propertyId.length > 0) {
+                // Fetch all properties in parallel
+                productProperties = await Promise.all(
+                    products.propertyId.map(id => ctx.db.get(id))
+                );
+                // Filter out any null results if a property was deleted
+                productProperties = productProperties.filter(p => p !== null);
             }
             return { product: products, productProperties };
         }
@@ -150,14 +152,12 @@ export const updateProduct = mutation({
             productName: args.productName,
             description: args.description,
             imageUrl: args.imageUrl,
-            category: args.category,
-            subCategory: args.subCategory,
+            category: args.category as Id<"category"> | undefined,
+            subCategory: args.subCategory as Id<"subcategory"> | undefined,
             organizationId: args.organizationId,
         });
 
-        // delete inventory entry
-        await ctx.db.delete(args.id);
-
+        // Return the ID of the updated product
         return { productId: args.id };
     },
 });

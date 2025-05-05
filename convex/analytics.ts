@@ -2,11 +2,11 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { Id } from './_generated/dataModel';
 
-export const getAnalytics = mutation({
+export const getAnalytics = query({
     args: {
         organizationId: v.string(),
     },
-    handler: async (ctx: QueryCtx, args) => {
+    handler: async (ctx, args) => {
         const { organizationId } = args;
         if (!organizationId) {
             throw new Error("Organization id is required");

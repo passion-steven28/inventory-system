@@ -25,6 +25,8 @@ export const createCustomer = mutation({
             imageUrl: args.imageUrl,
             organizationId: args.organizationId,
         });
+
+        return customerId;
     }
 });
 

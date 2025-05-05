@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {useFormatNumber} from "@/lib/hooks/useFormatNumber"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 
@@ -48,11 +49,9 @@ export const columns: ColumnDef<Payment>[] = [
         accessorKey: "amount",
         header: () => <div className="text-right">Amount</div>,
         cell: ({ row }) => {
+            const formatNumber = useFormatNumber();
             const amount = parseFloat(row.getValue("amount"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(amount)
+            const formatted = formatNumber(amount);
 
             return <div className="text-right font-medium">{formatted}</div>
         },
@@ -75,13 +74,9 @@ export const columns: ColumnDef<Payment>[] = [
         accessorKey: "amount",
         header: () => <div className="text-right">Amount</div>,
         cell: ({ row }) => {
+            const formatNumber = useFormatNumber();
             const amount = parseFloat(row.getValue("amount"))
-
-            // Format the amount as a dollar amount
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(amount)
+            const formatted = formatNumber(amount);
 
             return <div className="text-right font-medium">{formatted}</div>
         },

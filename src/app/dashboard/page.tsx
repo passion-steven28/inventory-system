@@ -21,11 +21,12 @@ import { api } from "../../../convex/_generated/api"
 import { useOrganization } from "@clerk/nextjs"
 import useShortNumber from "@/hooks/shortNumbers";
 import { useEffect } from "react";
+import { useFormatNumber } from "@/lib/hooks/useFormatNumber";
 
 
 
 export default function Home() {
-  const { formattedNumber, shortenNumber } = useShortNumber();
+  const formatNumber = useFormatNumber();
   const { organization } = useOrganization()
   const financialMetrics = useQuery(api.inventoryTransaction.calculateFinancialMetrics, {
     organizationId: organization?.id ?? '',
@@ -37,46 +38,31 @@ export default function Home() {
     {
       title: "Total Revenue",
       icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
-      value: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'Tsh',
-      }).format(financialMetrics?.revenue ?? 0),
+      value: formatNumber(financialMetrics?.revenue ?? 0),
       change: "+20.1% from last month",
     },
     {
       title: "Total Sales",
       icon: <DollarSignIcon className="h-4 w-4 text-muted-foreground" />,
-      value: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'Tsh',
-      }).format(financialMetrics?.profit ?? 0),
+      value: formatNumber(financialMetrics?.profit ?? 0),
       change: "+20.1% from last month",
     },
     {
       title: "Total cost",
       icon: <DollarSignIcon className="h-4 w-4 text-muted-foreground" />,
-      value: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'Tsh',
-      }).format(financialMetrics?.cost ?? 0),
+      value: formatNumber(financialMetrics?.cost ?? 0),
       change: "+20.1% from last month",
     },
     {
       title: "Total expenses",
       icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
-      value: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'Tsh',
-      }).format(financialMetrics?.totalExpenses ?? 0),
+      value: formatNumber(financialMetrics?.totalExpenses ?? 0),
       change: "+20.1% from last month",
     },
     {
       title: "Net Profit",
       icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
-      value: new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'Tsh',
-      }).format(financialMetrics?.netProfit ?? 0),
+      value: formatNumber(financialMetrics?.netProfit ?? 0),
       change: "+20.1% from last month",
     },
   ];
